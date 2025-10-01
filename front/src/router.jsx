@@ -170,7 +170,7 @@ const router = createBrowserRouter([
   },
   // OAuth2 콜백 처리 페이지 추가
   {
-    path: '/auth/oauth2/callback',
+    path: '/auth/callback',
     element: <OAuth2Callback />,
   },
 ]);

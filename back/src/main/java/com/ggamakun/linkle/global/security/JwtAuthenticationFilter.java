@@ -1,6 +1,8 @@
 package com.ggamakun.linkle.global.security;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +28,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
+    
+    // JWT 필터를 적용하지 않을 경로들
+    private static final List<String> EXCLUDED_PATHS = Arrays.asList(
+        "/api/v1/auth/login",
+        "/api/v1/auth/refresh",
+        "/oauth2",
+        "/login/oauth2",
+        "/swagger-ui",
+        "/v3/api-docs",
+        "/h2-console"
+    );
+    
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        // OAuth2 관련 경로는 JWT 필터를 거치지 않도록 설정
+        return EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
+    }
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, 

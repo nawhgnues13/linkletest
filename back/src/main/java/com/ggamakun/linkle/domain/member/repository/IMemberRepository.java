@@ -18,7 +18,7 @@ public interface IMemberRepository {
     int updateMember(Member member);
     
     // 회원 ID로 조회
-    Member findById(Long memberId);
+    Member findById(Integer memberId);
     
     // 이메일 중복 확인
     int countByEmail(String email);

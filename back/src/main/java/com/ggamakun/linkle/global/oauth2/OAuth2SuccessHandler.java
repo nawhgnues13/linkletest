@@ -1,6 +1,8 @@
 package com.ggamakun.linkle.global.oauth2;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -32,27 +34,50 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                                       HttpServletResponse response,
                                       Authentication authentication) throws IOException, ServletException {
         
-        CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-        Member member = oAuth2User.getMember();
-        boolean isNewUser = oAuth2User.isNewUser();
+        log.info("OAuth2SuccessHandler.onAuthenticationSuccess 호출");
         
-        log.info("OAuth2 로그인 성공 - 회원 ID: {}, 신규 회원: {}", member.getMemberId(), isNewUser);
-        
-        // JWT 토큰 생성
-        String accessToken = jwtUtil.createAccessToken(member.getMemberId(), member.getEmail());
-        String refreshToken = jwtUtil.createRefreshToken(member.getMemberId(), member.getEmail());
-        
-        // 프론트엔드로 리다이렉트 (쿼리 파라미터로 토큰 전달)
-        String targetUrl = UriComponentsBuilder.fromUriString(successUrl)
-            .queryParam("accessToken", accessToken)
-            .queryParam("refreshToken", refreshToken)
-            .queryParam("isNewUser", isNewUser)
-            .queryParam("memberId", member.getMemberId())
-            .queryParam("email", member.getEmail())
-            .queryParam("name", member.getName())
-            .build()
-            .toUriString();
-        
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        try {
+            CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+            Member member = oAuth2User.getMember();
+            boolean isNewUser = oAuth2User.isNewUser();
+            
+            log.info("OAuth2 로그인 성공 - 회원 ID: {}, 이메일: {}, 신규 회원: {}", 
+                member.getMemberId(), member.getEmail(), isNewUser);
+            
+            // JWT 토큰 생성
+            String accessToken = jwtUtil.createAccessToken(member.getMemberId(), member.getEmail());
+            String refreshToken = jwtUtil.createRefreshToken(member.getMemberId(), member.getEmail());
+            
+            log.info("JWT 토큰 생성 완료");
+            
+            // URL 파라미터를 안전하게 인코딩
+            String encodedEmail = URLEncoder.encode(member.getEmail() != null ? member.getEmail() : "", StandardCharsets.UTF_8.toString());
+            String encodedName = URLEncoder.encode(member.getName() != null ? member.getName() : "", StandardCharsets.UTF_8.toString());
+            
+            // 프론트엔드로 리다이렉트 (React 라우터 경로로 수정)
+            String targetUrl = UriComponentsBuilder.fromUriString(successUrl)
+                .queryParam("accessToken", accessToken)
+                .queryParam("refreshToken", refreshToken)
+                .queryParam("isNewUser", isNewUser)
+                .queryParam("memberId", member.getMemberId())
+                .queryParam("email", encodedEmail)
+                .queryParam("name", encodedName)
+                .build()
+                .toUriString();
+            
+            log.info("리다이렉트 URL: {}", targetUrl);
+            
+            // 캐시 방지 헤더 추가
+            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.setHeader("Pragma", "no-cache");
+            response.setHeader("Expires", "0");
+            
+            // 리다이렉트 수행
+            getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            
+        } catch (Exception e) {
+            log.error("OAuth2 로그인 성공 처리 중 오류 발생", e);
+            throw new IOException("OAuth2 로그인 처리 실패", e);
+        }
     }
 }
