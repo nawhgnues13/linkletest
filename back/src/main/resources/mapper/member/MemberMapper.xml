@@ -145,19 +145,4 @@
         )
     </insert>
 
-    <!-- 회원 정보 수정 -->
-    <update id="updateMember" parameterType="com.ggamakun.linkle.domain.member.entity.Member">
-        UPDATE Member SET
-            name = #{name},
-            nickname = #{nickname},
-            birth_date = #{birthDate},
-            gender = #{gender},
-            sido = #{sido},
-            sigungu = #{sigungu},
-            description = #{description},
-            interests = #{interests},
-            updated_at = SYSDATE
-        WHERE member_id = #{memberId}
-    </update>
-
 </mapper>

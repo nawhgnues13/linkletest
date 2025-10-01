@@ -14,9 +14,6 @@ public interface IMemberRepository {
     // 회원 등록
     int insertMember(Member member);
     
-    // 회원 정보 수정
-    int updateMember(Member member);
-    
     // 회원 ID로 조회
     Member findById(Integer memberId);
     
