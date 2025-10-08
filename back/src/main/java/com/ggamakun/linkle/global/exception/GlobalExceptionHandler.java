@@ -29,6 +29,20 @@ public class GlobalExceptionHandler {
         
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
+    
+    // 409 Conflict 처리 (중복 데이터)
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateException(DuplicateException e) {
+        log.error("Duplicate error occurred: {}", e.getMessage());
+        
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.CONFLICT.value());
+        errorResponse.put("error", "Conflict");
+        errorResponse.put("message", e.getMessage());
+        
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
 	
 	// 500 Internal Server Error 처리
 	@ExceptionHandler(Exception.class)
