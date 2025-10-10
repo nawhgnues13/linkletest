@@ -20,6 +20,12 @@ public interface IMemberRepository {
     // 이메일 중복 확인
     int countByEmail(String email);
     
+    // 닉네임 중복 확인
+    int countByNickname(String nickname);
+    
+    // 회원 정보 수정
+    int updateMember(Member member);
+    
     // Provider와 ProviderId로 회원 조회 (소셜 로그인용)
     Member findByProviderAndProviderId(@Param("provider") String provider, 
                                        @Param("providerId") String providerId);

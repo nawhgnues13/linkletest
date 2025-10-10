@@ -29,12 +29,9 @@ export default function OAuth2Callback() {
         refreshToken: refreshToken,
       });
 
-      // 신규 사용자면 추가 정보 입력 페이지로, 기존 사용자면 홈으로
+      // 신규 사용자면 2단계 회원가입 페이지로, 기존 사용자면 홈으로
       if (isNewUser) {
-        // 향후 구현 예정: 2단계 회원가입 페이지로 이동
-        // navigate('/signup/step2');
-        console.log('신규 사용자 - 추가 정보 입력 페이지로 이동 예정');
-        navigate('/');
+        navigate('/signup/step2', { state: { memberId: parseInt(memberId) } });
       } else {
         navigate('/');
       }

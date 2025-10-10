@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "회원가입 요청 DTO")
-public class RegisterRequestDto {
+@Schema(description = "회원가입 1단계 요청 DTO")
+public class RegisterStep1RequestDto {
     
     @NotBlank(message = "이메일을 입력해주세요.")
     @Email(message = "올바른 이메일 형식이 아닙니다.")

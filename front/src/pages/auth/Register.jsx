@@ -1,6 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authApi } from '../../services/api';
 
 export default function Register() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -10,6 +14,7 @@ export default function Register() {
 
   const [errors, setErrors] = useState({});
   const [passwordValid, setPasswordValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -64,16 +69,34 @@ export default function Register() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      console.log('다음 단계로:', formData);
-      // 다음 단계로 이동 로직
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await authApi.registerStep1(
+        formData.email,
+        formData.password,
+        formData.name,
+      );
+      console.log('1단계 완료:', response);
+
+      // 2단계로 이동
+      navigate('/signup/step2', { state: { memberId: response.memberId } });
+    } catch (error) {
+      console.error('회원가입 에러:', error);
+      setErrors({ general: error.message || '회원가입에 실패했습니다.' });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleKakaoLogin = () => {
-    console.log('카카오 로그인');
+    window.location.href = 'http://localhost:8080/oauth2/authorization/kakao';
   };
 
   return (
@@ -101,6 +124,12 @@ export default function Register() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {errors.general && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-600 text-sm">
+            {errors.general}
+          </div>
+        )}
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">이메일</label>
           <input
@@ -134,7 +163,7 @@ export default function Register() {
               className={`mt-1 text-sm flex items-center ${passwordValid ? 'text-green-500' : 'text-gray-400'}`}
             >
               <span className="mr-1">{passwordValid ? '✓' : '○'}</span>
-              영문, 이의 영문 대소문자, 숫자 조치해 2글자 이상
+              영문, 숫자 포함 8자 이상
             </p>
           )}
           {errors.password && (
@@ -183,9 +212,10 @@ export default function Register() {
 
         <button
           type="submit"
-          className="w-full py-3 bg-[#4CA8FF] text-white rounded-lg font-semibold hover:bg-[#3b8de6] transition-colors mt-6"
+          disabled={isLoading}
+          className="w-full py-3 bg-[#4CA8FF] text-white rounded-lg font-semibold hover:bg-[#3b8de6] transition-colors mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          다음
+          {isLoading ? '처리 중...' : '다음'}
         </button>
       </form>
 

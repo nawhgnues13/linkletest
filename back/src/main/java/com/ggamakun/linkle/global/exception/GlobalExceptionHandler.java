@@ -16,6 +16,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GlobalExceptionHandler {
 	
+	// 400 Bad Request 처리 (비즈니스 로직 오류)
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<Map<String, Object>> handleBadRequestException(BadRequestException e) {
+        log.error("Bad request error occurred: {}", e.getMessage());
+        
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
+        errorResponse.put("error", "Bad Request");
+        errorResponse.put("message", e.getMessage());
+        
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+	
 	// 401 Unauthorized 처리
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<Map<String, Object>> handleUnauthorizedException(UnauthorizedException e) {

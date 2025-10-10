@@ -3,6 +3,8 @@ import { MainLayout, AuthLayout } from './components/layout';
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import RegisterStep2 from './pages/auth/RegisterStep2';
+import RegisterStep3 from './pages/auth/RegisterStep3';
 import OAuth2Callback from './pages/auth/OAuth2Callback';
 
 const router = createBrowserRouter([
@@ -29,6 +31,22 @@ const router = createBrowserRouter([
     element: (
       <AuthLayout>
         <Register />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: '/signup/step2',
+    element: (
+      <AuthLayout>
+        <RegisterStep2 />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: '/signup/step3',
+    element: (
+      <AuthLayout>
+        <RegisterStep3 />
       </AuthLayout>
     ),
   },

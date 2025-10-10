@@ -1,10 +1,12 @@
 package com.ggamakun.linkle.domain.auth.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginResponseDto {
@@ -14,4 +16,5 @@ public class LoginResponseDto {
     private String nickname;
     private String accessToken;
     private String refreshToken;
+    private String message;
 }

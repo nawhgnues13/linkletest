@@ -1,4 +1,4 @@
-import { post } from '../apiClient';
+import { post, get } from '../apiClient';
 
 export const authApi = {
   // 로그인
@@ -11,6 +11,60 @@ export const authApi = {
     }
 
     return await response.json();
+  },
+
+  // 회원가입 1단계
+  registerStep1: async (email, password, name) => {
+    const response = await post('/auth/register/step1', { email, password, name });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || '회원가입에 실패했습니다.');
+    }
+
+    return await response.json();
+  },
+
+  // 회원가입 2단계
+  registerStep2: async (memberId, nickname, birthDate, gender, sido, sigungu) => {
+    const response = await post('/auth/register/step2', {
+      memberId,
+      nickname,
+      birthDate,
+      gender,
+      sido,
+      sigungu,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || '회원 정보 등록에 실패했습니다.');
+    }
+
+    return await response.json();
+  },
+
+  // 회원가입 3단계
+  registerStep3: async (memberId, interests) => {
+    const response = await post('/auth/register/step3', {
+      memberId,
+      interests,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || '관심사 등록에 실패했습니다.');
+    }
+
+    return await response.json();
+  },
+
+  // 닉네임 중복 체크
+  checkNickname: async (nickname) => {
+    const isDuplicate = await get(
+      `/member/check-nickname?nickname=${encodeURIComponent(nickname)}`,
+    );
+    return isDuplicate;
   },
 
   // 로그아웃 (로컬 토큰 삭제)
