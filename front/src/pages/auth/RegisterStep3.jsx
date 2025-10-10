@@ -10,6 +10,7 @@ export default function RegisterStep3() {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [error, setError] = useState('');
+  const [memberEmail, setMemberEmail] = useState('');
 
   useEffect(() => {
     if (!memberId) {
@@ -18,9 +19,9 @@ export default function RegisterStep3() {
       return;
     }
 
-    // 카테고리 목록 불러오기
+    setMemberEmail(location.state?.email || '');
     fetchCategories();
-  }, [memberId, navigate]);
+  }, [memberId, navigate, location.state]);
 
   const fetchCategories = async () => {
     try {
@@ -35,10 +36,8 @@ export default function RegisterStep3() {
   const handleCategoryClick = (categoryId) => {
     setSelectedCategories((prev) => {
       if (prev.includes(categoryId)) {
-        // 이미 선택된 경우 제거
         return prev.filter((id) => id !== categoryId);
       } else {
-        // 최대 5개까지만 선택 가능
         if (prev.length >= 5) {
           setError('관심사는 최대 5개까지 선택 가능합니다.');
           return prev;
@@ -59,8 +58,7 @@ export default function RegisterStep3() {
 
     try {
       await authApi.registerStep3(memberId, selectedCategories);
-      alert('회원가입이 완료되었습니다!');
-      navigate('/login');
+      navigate('/signup/complete', { state: { email: memberEmail } });
     } catch (error) {
       console.error('3단계 에러:', error);
       alert(error.message || '관심사 등록에 실패했습니다.');
@@ -68,12 +66,11 @@ export default function RegisterStep3() {
   };
 
   const handlePrevious = () => {
-    navigate('/signup/step2', { state: { memberId } });
+    navigate('/signup/step2', { state: { memberId, email: memberEmail } });
   };
 
   return (
     <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-8">
-      {/* 단계 표시 */}
       <div className="flex items-center justify-center mb-8">
         <div className="flex items-center">
           <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
@@ -95,7 +92,6 @@ export default function RegisterStep3() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* 선택된 관심사 개수 표시 */}
         <div className="mb-4">
           <p className="text-sm text-gray-600">
             선택된 관심사:{' '}
@@ -108,18 +104,8 @@ export default function RegisterStep3() {
                   .flatMap((parent) => parent.children || [])
                   .find((cat) => cat.categoryId === id);
                 return category ? (
-                  <span
-                    key={id}
-                    className="px-3 py-1 bg-primary text-white rounded-full text-sm flex items-center gap-1"
-                  >
+                  <span key={id} className="px-3 py-1 bg-primary text-white text-sm rounded-full">
                     {category.name}
-                    <button
-                      type="button"
-                      onClick={() => handleCategoryClick(id)}
-                      className="text-white hover:text-gray-200"
-                    >
-                      ×
-                    </button>
                   </span>
                 ) : null;
               })}
@@ -127,22 +113,27 @@ export default function RegisterStep3() {
           )}
         </div>
 
-        {/* 카테고리 목록 */}
-        <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg p-4 mb-4">
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-600 text-sm mb-4">
+            {error}
+          </div>
+        )}
+
+        <div className="space-y-6 mb-6">
           {categories.map((parent) => (
-            <div key={parent.categoryId} className="mb-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">{parent.name}</h3>
-              <div className="flex flex-wrap gap-2">
+            <div key={parent.categoryId}>
+              <h3 className="font-medium text-gray-900 mb-3">{parent.name}</h3>
+              <div className="grid grid-cols-2 gap-2">
                 {parent.children &&
                   parent.children.map((child) => (
                     <button
                       key={child.categoryId}
                       type="button"
                       onClick={() => handleCategoryClick(child.categoryId)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      className={`px-4 py-2 rounded-lg border transition-colors ${
                         selectedCategories.includes(child.categoryId)
-                          ? 'bg-primary text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-primary text-white border-primary'
+                          : 'bg-white text-gray-700 border-gray-300 hover:border-primary'
                       }`}
                     >
                       {child.name}
@@ -153,25 +144,17 @@ export default function RegisterStep3() {
           ))}
         </div>
 
-        {error && (
-          <p className="text-sm text-red-500 mb-4 flex items-center">
-            <span className="mr-1">✕</span>
-            {error}
-          </p>
-        )}
-
-        {/* 버튼 그룹 */}
         <div className="flex gap-3">
           <button
             type="button"
             onClick={handlePrevious}
-            className="flex-1 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+            className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors"
           >
             이전
           </button>
           <button
             type="submit"
-            className="flex-1 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-hover transition-colors"
+            className="flex-1 bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
           >
             완료
           </button>

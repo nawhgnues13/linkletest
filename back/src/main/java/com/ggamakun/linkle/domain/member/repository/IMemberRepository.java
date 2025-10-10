@@ -29,4 +29,6 @@ public interface IMemberRepository {
     // Provider와 ProviderId로 회원 조회 (소셜 로그인용)
     Member findByProviderAndProviderId(@Param("provider") String provider, 
                                        @Param("providerId") String providerId);
+    // 이메일 인증
+    Member findByVerificationToken(String token);
 }

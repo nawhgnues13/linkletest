@@ -7,6 +7,8 @@ import RegisterStep2 from './pages/auth/RegisterStep2';
 import RegisterStep3 from './pages/auth/RegisterStep3';
 import OAuth2Callback from './pages/auth/OAuth2Callback';
 import FindId from './pages/auth/FindId';
+import VerifyEmail from './pages/auth/VerifyEmail';
+import RegisterComplete from './pages/auth/RegisterComplete';
 
 const router = createBrowserRouter([
   // 메인 레이아웃
@@ -52,6 +54,14 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/signup/complete',
+    element: (
+      <AuthLayout>
+        <RegisterComplete />
+      </AuthLayout>
+    ),
+  },
+  {
     path: '/find-id',
     element: (
       <AuthLayout>
@@ -63,6 +73,10 @@ const router = createBrowserRouter([
   {
     path: '/auth/callback',
     element: <OAuth2Callback />,
+  },
+  {
+    path: '/auth/verify-email',
+    element: <VerifyEmail />,
   },
 ]);
 

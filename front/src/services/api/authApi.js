@@ -59,6 +59,18 @@ export const authApi = {
     return await response.json();
   },
 
+  // 이메일 인증
+  verifyEmail: async (token) => {
+    const response = await get(`/auth/email/verify?token=${encodeURIComponent(token)}`);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || '이메일 인증에 실패했습니다.');
+    }
+
+    return;
+  },
+
   // 닉네임 중복 체크
   checkNickname: async (nickname) => {
     const isDuplicate = await get(

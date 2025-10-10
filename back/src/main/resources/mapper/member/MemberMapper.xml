@@ -26,7 +26,10 @@
             updated_at as updatedAt,
             provider,
             provider_id as providerId,
-            is_deleted as isDeleted
+            is_deleted as isDeleted,
+            email_verified as emailVerified,
+            verification_token as verificationToken,
+            token_expiry_date as tokenExpiryDate
         FROM Member 
         WHERE email = #{email}
         AND is_deleted = 'N'
@@ -56,7 +59,10 @@
             updated_at as updatedAt,
             provider,
             provider_id as providerId,
-            is_deleted as isDeleted
+            is_deleted as isDeleted,
+            email_verified as emailVerified,
+            verification_token as verificationToken,
+            token_expiry_date as tokenExpiryDate
         FROM Member 
         WHERE member_id = #{memberId}
         AND is_deleted = 'N'
@@ -86,10 +92,46 @@
             updated_at as updatedAt,
             is_deleted as isDeleted,
             provider,
-            provider_id as providerId
+            provider_id as providerId,
+            email_verified as emailVerified,
+            verification_token as verificationToken,
+            token_expiry_date as tokenExpiryDate
         FROM Member 
         WHERE provider = #{provider}
         AND provider_id = #{providerId}
+        AND is_deleted = 'N'
+    </select>
+    
+    <!-- 토큰으로 회원 조회 -->
+    <select id="findByVerificationToken" parameterType="String" resultType="com.ggamakun.linkle.domain.member.entity.Member">
+        SELECT 
+            member_id as memberId,
+            file_id as fileId,
+            email,
+            password,
+            name,
+            nickname,
+            birth_date as birthDate,
+            gender,
+            sido,
+            sigungu,
+            description,
+            interests,
+            join_date as joinDate,
+            is_withdrawn as isWithdrawn,
+            leave_date as leaveDate,
+            created_by as createdBy,
+            created_at as createdAt,
+            updated_by as updatedBy,
+            updated_at as updatedAt,
+            provider,
+            provider_id as providerId,
+            is_deleted as isDeleted,
+            email_verified as emailVerified,
+            verification_token as verificationToken,
+            token_expiry_date as tokenExpiryDate
+        FROM Member 
+        WHERE verification_token = #{token}
         AND is_deleted = 'N'
     </select>
 
@@ -131,7 +173,8 @@
             is_withdrawn,
             provider,
             provider_id,
-            is_deleted
+            is_deleted,
+            email_verified
         ) VALUES (
             #{memberId},
             #{email},
@@ -149,6 +192,7 @@
             'N',
             #{provider},
             #{providerId},
+            'N',
             'N'
         )
     </insert>
@@ -163,6 +207,9 @@
             <if test="sido != null">sido = #{sido},</if>
             <if test="sigungu != null">sigungu = #{sigungu},</if>
             <if test="interests != null">interests = #{interests},</if>
+            <if test="emailVerified != null">email_verified = #{emailVerified},</if>
+            <if test="verificationToken != null">verification_token = #{verificationToken},</if>
+            <if test="tokenExpiryDate != null">token_expiry_date = #{tokenExpiryDate},</if>
             updated_by = #{updatedBy},
             updated_at = SYSDATE
         WHERE member_id = #{memberId}

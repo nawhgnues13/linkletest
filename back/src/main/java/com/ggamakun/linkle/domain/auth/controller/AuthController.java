@@ -16,6 +16,7 @@ import com.ggamakun.linkle.domain.auth.dto.RegisterStep1RequestDto;
 import com.ggamakun.linkle.domain.auth.dto.RegisterStep2RequestDto;
 import com.ggamakun.linkle.domain.auth.dto.RegisterStep3RequestDto;
 import com.ggamakun.linkle.domain.auth.service.AuthService;
+import com.ggamakun.linkle.domain.auth.service.EmailService;
 import com.ggamakun.linkle.domain.member.entity.Member;
 import com.ggamakun.linkle.domain.member.service.MemberService;
 
@@ -40,6 +41,7 @@ public class AuthController {
     
     private final AuthService authService;
     private final MemberService memberService;
+    private final EmailService emailService;
     
     @PostMapping("/login")
     @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다.")
@@ -207,6 +209,8 @@ public class AuthController {
         
         // 업데이트된 회원 정보 조회
         Member member = memberService.getMemberById(request.getMemberId());
+        
+        emailService.sendVerificationEmail(member.getEmail());
         
         // 응답 생성
         RegisterResponseDto response = RegisterResponseDto.builder()

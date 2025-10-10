@@ -2,6 +2,7 @@ package com.ggamakun.linkle.domain.member.entity;
 
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +37,9 @@ public class Member {
     private String provider;
     private String providerId;
     private String isDeleted;
+    private String emailVerified;
+    private String verificationToken;
+    private Timestamp tokenExpiryDate;
     
     public boolean isSocialUser() {
         return provider != null && !provider.equals("LOCAL");
