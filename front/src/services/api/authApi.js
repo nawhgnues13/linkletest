@@ -67,6 +67,18 @@ export const authApi = {
     return isDuplicate;
   },
 
+  // 아이디 찾기
+  findId: async (email) => {
+    const response = await post('/auth/find-id', { email });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || '등록된 이메일을 찾을 수 없습니다.');
+    }
+
+    return await response.json();
+  },
+
   // 로그아웃
   logout: async () => {
     await post('/auth/logout', {});

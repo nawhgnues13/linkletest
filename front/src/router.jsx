@@ -6,6 +6,7 @@ import Register from './pages/auth/Register';
 import RegisterStep2 from './pages/auth/RegisterStep2';
 import RegisterStep3 from './pages/auth/RegisterStep3';
 import OAuth2Callback from './pages/auth/OAuth2Callback';
+import FindId from './pages/auth/FindId';
 
 const router = createBrowserRouter([
   // 메인 레이아웃
@@ -50,7 +51,15 @@ const router = createBrowserRouter([
       </AuthLayout>
     ),
   },
-  // OAuth2 콜백 처리 페이지 추가
+  {
+    path: '/find-id',
+    element: (
+      <AuthLayout>
+        <FindId />
+      </AuthLayout>
+    ),
+  },
+  // OAuth2 콜백 처리 페이지
   {
     path: '/auth/callback',
     element: <OAuth2Callback />,

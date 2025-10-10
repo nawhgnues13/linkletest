@@ -3,11 +3,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#f0f9ff',
-          500: '#3b82f6',
-          600: '#2563eb',
-        },
+        primary: '#4CA8FF',
+        'primary-hover': '#3b8de6',
       },
     },
   },
