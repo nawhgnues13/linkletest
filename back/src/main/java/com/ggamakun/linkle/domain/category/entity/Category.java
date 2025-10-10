@@ -16,9 +16,5 @@ public class Category {
     private Integer categoryId;
     private Integer parentCategoryId;
     private String name;
-    private Integer createdBy;
-    private Date createdAt;
-    private Integer updatedBy;
-    private Date updatedAt;
     private String isDeleted;
 }

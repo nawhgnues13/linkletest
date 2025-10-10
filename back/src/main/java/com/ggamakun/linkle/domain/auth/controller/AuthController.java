@@ -25,6 +25,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,10 +55,54 @@ public class AuthController {
             content = @Content
         )
     })
-    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto request) {
-        log.info("로그인 요청: {}", request.getEmail());
-        LoginResponseDto response = authService.login(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto request,
+    		HttpServletResponse response) {
+    	log.info("로그인 요청: {}", request.getEmail());
+        LoginResponseDto loginResponse = authService.login(request);
+        
+        // Access Token을 HttpOnly Cookie로 설정
+        Cookie accessTokenCookie = new Cookie("accessToken", loginResponse.getAccessToken());
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setSecure(true); // HTTPS에서만 전송
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(60 * 60); // 1시간
+        response.addCookie(accessTokenCookie);
+        
+        // Refresh Token을 HttpOnly Cookie로 설정
+        Cookie refreshTokenCookie = new Cookie("refreshToken", loginResponse.getRefreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(60 * 60 * 24 * 14); // 14일
+        response.addCookie(refreshTokenCookie);
+        
+        // 응답에서 토큰 제거 (쿠키로만 전송)
+        loginResponse.setAccessToken(null);
+        loginResponse.setRefreshToken(null);
+        
+        return ResponseEntity.ok(loginResponse);
+    }
+    
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "쿠키를 삭제하여 로그아웃합니다.")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        // Access Token 쿠키 삭제
+        Cookie accessTokenCookie = new Cookie("accessToken", null);
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(0);
+        response.addCookie(accessTokenCookie);
+        
+        // Refresh Token 쿠키 삭제
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0);
+        response.addCookie(refreshTokenCookie);
+        
+        return ResponseEntity.ok().build();
     }
     
     @PostMapping("/register/step1")

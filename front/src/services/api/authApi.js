@@ -67,10 +67,9 @@ export const authApi = {
     return isDuplicate;
   },
 
-  // 로그아웃 (로컬 토큰 삭제)
-  logout: () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+  // 로그아웃
+  logout: async () => {
+    await post('/auth/logout', {});
   },
 
   // 토큰 갱신

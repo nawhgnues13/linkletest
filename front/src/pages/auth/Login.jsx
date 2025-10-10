@@ -72,12 +72,7 @@ export default function Login() {
         email: data.email,
         name: data.name,
         nickname: data.nickname,
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
       });
-
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
 
       navigate('/');
     } catch (error) {

@@ -8,28 +8,18 @@ export default function OAuth2Callback() {
   const { setUser } = useUserStore();
 
   useEffect(() => {
-    const accessToken = searchParams.get('accessToken');
-    const refreshToken = searchParams.get('refreshToken');
     const isNewUser = searchParams.get('isNewUser') === 'true';
     const memberId = searchParams.get('memberId');
     const email = searchParams.get('email');
     const name = searchParams.get('name');
 
-    if (accessToken && refreshToken) {
-      // 토큰 저장
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-
-      // 사용자 정보 저장
+    if (memberId) {
       setUser({
         id: parseInt(memberId),
         email: email,
         name: name,
-        accessToken: accessToken,
-        refreshToken: refreshToken,
       });
 
-      // 신규 사용자면 2단계 회원가입 페이지로, 기존 사용자면 홈으로
       if (isNewUser) {
         navigate('/signup/step2', { state: { memberId: parseInt(memberId) } });
       } else {
