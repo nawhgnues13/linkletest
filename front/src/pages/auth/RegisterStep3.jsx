@@ -76,15 +76,15 @@ export default function RegisterStep3() {
       {/* 단계 표시 */}
       <div className="flex items-center justify-center mb-8">
         <div className="flex items-center">
-          <div className="w-8 h-8 bg-[#4CA8FF] text-white rounded-full flex items-center justify-center text-sm font-medium">
+          <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
             1
           </div>
-          <div className="w-12 h-0.5 bg-[#4CA8FF] mx-2"></div>
-          <div className="w-8 h-8 bg-[#4CA8FF] text-white rounded-full flex items-center justify-center text-sm font-medium">
+          <div className="w-12 h-0.5 bg-primary mx-2"></div>
+          <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
             2
           </div>
-          <div className="w-12 h-0.5 bg-[#4CA8FF] mx-2"></div>
-          <div className="w-8 h-8 bg-[#4CA8FF] text-white rounded-full flex items-center justify-center text-sm font-medium">
+          <div className="w-12 h-0.5 bg-primary mx-2"></div>
+          <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
             3
           </div>
         </div>
@@ -99,7 +99,7 @@ export default function RegisterStep3() {
         <div className="mb-4">
           <p className="text-sm text-gray-600">
             선택된 관심사:{' '}
-            <span className="font-semibold text-[#4CA8FF]">{selectedCategories.length}개</span>
+            <span className="font-semibold text-primary">{selectedCategories.length}개</span>
           </p>
           {selectedCategories.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
@@ -110,7 +110,7 @@ export default function RegisterStep3() {
                 return category ? (
                   <span
                     key={id}
-                    className="px-3 py-1 bg-[#4CA8FF] text-white rounded-full text-sm flex items-center gap-1"
+                    className="px-3 py-1 bg-primary text-white rounded-full text-sm flex items-center gap-1"
                   >
                     {category.name}
                     <button
@@ -141,7 +141,7 @@ export default function RegisterStep3() {
                       onClick={() => handleCategoryClick(child.categoryId)}
                       className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                         selectedCategories.includes(child.categoryId)
-                          ? 'bg-[#4CA8FF] text-white'
+                          ? 'bg-primary text-white'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
@@ -171,7 +171,7 @@ export default function RegisterStep3() {
           </button>
           <button
             type="submit"
-            className="flex-1 py-3 bg-[#4CA8FF] text-white rounded-lg font-semibold hover:bg-[#3b8de6] transition-colors"
+            className="flex-1 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-hover transition-colors"
           >
             완료
           </button>

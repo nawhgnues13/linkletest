@@ -69,7 +69,7 @@ export default function FindId() {
           <div className="flex gap-3 pt-4">
             <Link
               to="/login"
-              className="flex-1 py-3 bg-[#4CA8FF] text-white rounded-lg font-semibold hover:bg-[#3b8de6] transition-colors flex items-center justify-center"
+              className="flex-1 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-hover transition-colors flex items-center justify-center"
             >
               로그인
             </Link>
@@ -91,7 +91,7 @@ export default function FindId() {
               value={email}
               onChange={handleInputChange}
               placeholder="example@linkle.com"
-              className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4CA8FF] focus:border-transparent ${
+              className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
                 errors.email ? 'border-red-300' : 'border-gray-300'
               }`}
             />
@@ -106,7 +106,7 @@ export default function FindId() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 bg-[#4CA8FF] text-white rounded-lg font-semibold hover:bg-[#3b8de6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="w-full py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             <span className="mr-2">🔍</span>
             {isLoading ? '처리 중...' : '아이디 찾기'}

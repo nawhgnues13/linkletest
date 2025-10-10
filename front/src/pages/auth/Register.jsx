@@ -104,7 +104,7 @@ export default function Register() {
       {/* 단계 표시 */}
       <div className="flex items-center justify-center mb-8">
         <div className="flex items-center">
-          <div className="w-8 h-8 bg-[#4CA8FF] text-white rounded-full flex items-center justify-center text-sm font-medium">
+          <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
             1
           </div>
           <div className="w-12 h-0.5 bg-gray-300 mx-2"></div>
@@ -138,7 +138,7 @@ export default function Register() {
             value={formData.email}
             onChange={handleInputChange}
             placeholder="이메일"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4CA8FF] focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           />
           {errors.email && (
             <p className="mt-1 text-sm text-red-500 flex items-center">
@@ -156,7 +156,7 @@ export default function Register() {
             value={formData.password}
             onChange={handleInputChange}
             placeholder="비밀번호"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4CA8FF] focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           />
           {formData.password && (
             <p
@@ -182,7 +182,7 @@ export default function Register() {
             value={formData.passwordConfirm}
             onChange={handleInputChange}
             placeholder="비밀번호 확인"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4CA8FF] focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           />
           {errors.passwordConfirm && (
             <p className="mt-1 text-sm text-red-500 flex items-center">
@@ -200,7 +200,7 @@ export default function Register() {
             value={formData.name}
             onChange={handleInputChange}
             placeholder="이름을 입력해주세요"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4CA8FF] focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           />
           {errors.name && (
             <p className="mt-1 text-sm text-red-500 flex items-center">
@@ -213,7 +213,7 @@ export default function Register() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-3 bg-[#4CA8FF] text-white rounded-lg font-semibold hover:bg-[#3b8de6] transition-colors mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-hover transition-colors mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? '처리 중...' : '다음'}
         </button>

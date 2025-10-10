@@ -139,11 +139,11 @@ export default function RegisterStep2() {
       {/* 단계 표시 */}
       <div className="flex items-center justify-center mb-8">
         <div className="flex items-center">
-          <div className="w-8 h-8 bg-[#4CA8FF] text-white rounded-full flex items-center justify-center text-sm font-medium">
+          <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
             1
           </div>
-          <div className="w-12 h-0.5 bg-[#4CA8FF] mx-2"></div>
-          <div className="w-8 h-8 bg-[#4CA8FF] text-white rounded-full flex items-center justify-center text-sm font-medium">
+          <div className="w-12 h-0.5 bg-primary mx-2"></div>
+          <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-medium">
             2
           </div>
           <div className="w-12 h-0.5 bg-gray-300 mx-2"></div>
@@ -169,7 +169,7 @@ export default function RegisterStep2() {
               value={formData.nickname}
               onChange={handleInputChange}
               placeholder="닉네임"
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4CA8FF] focus:border-transparent"
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
             <button
               type="button"
@@ -201,7 +201,7 @@ export default function RegisterStep2() {
             name="birthDate"
             value={formData.birthDate}
             onChange={handleInputChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4CA8FF] focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           />
           {errors.birthDate && (
             <p className="mt-1 text-sm text-red-500 flex items-center">
@@ -222,7 +222,7 @@ export default function RegisterStep2() {
                 value="M"
                 checked={formData.gender === 'M'}
                 onChange={handleInputChange}
-                className="w-4 h-4 text-[#4CA8FF] focus:ring-[#4CA8FF]"
+                className="w-4 h-4 text-primary focus:ring-primary"
               />
               <span className="ml-2 text-gray-700">남성</span>
             </label>
@@ -233,7 +233,7 @@ export default function RegisterStep2() {
                 value="F"
                 checked={formData.gender === 'F'}
                 onChange={handleInputChange}
-                className="w-4 h-4 text-[#4CA8FF] focus:ring-[#4CA8FF]"
+                className="w-4 h-4 text-primary focus:ring-primary"
               />
               <span className="ml-2 text-gray-700">여성</span>
             </label>
@@ -263,7 +263,7 @@ export default function RegisterStep2() {
             <button
               type="button"
               onClick={openAddressSearch}
-              className="px-4 py-3 bg-[#4CA8FF] text-white rounded-lg font-medium hover:bg-[#3b8de6] transition-colors whitespace-nowrap"
+              className="px-4 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-hover transition-colors whitespace-nowrap"
             >
               주소검색
             </button>
@@ -287,7 +287,7 @@ export default function RegisterStep2() {
           </button>
           <button
             type="submit"
-            className="flex-1 py-3 bg-[#4CA8FF] text-white rounded-lg font-semibold hover:bg-[#3b8de6] transition-colors"
+            className="flex-1 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary-hover transition-colors"
           >
             다음
           </button>

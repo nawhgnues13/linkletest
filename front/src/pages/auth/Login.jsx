@@ -116,7 +116,7 @@ export default function Login() {
                 value={formData.email}
                 onChange={handleInputChange}
                 placeholder="이메일"
-                className={`w-full h-12 px-4 bg-white border rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CA8FF] focus:border-transparent ${
+                className={`w-full h-12 px-4 bg-white border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
                   errors.email ? 'border-red-300' : 'border-gray-300'
                 }`}
               />
@@ -138,7 +138,7 @@ export default function Login() {
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder="비밀번호"
-                className={`w-full h-12 px-4 bg-white border rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CA8FF] focus:border-transparent ${
+                className={`w-full h-12 px-4 bg-white border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
                   errors.password ? 'border-red-300' : 'border-gray-300'
                 }`}
               />
@@ -153,7 +153,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 bg-[#4CA8FF] text-white rounded-md font-semibold hover:bg-[#3b8de6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-12 bg-primary text-white rounded-md font-semibold hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? '로그인 중...' : '로그인'}
             </button>
