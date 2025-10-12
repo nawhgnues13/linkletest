@@ -45,9 +45,6 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(encodedPassword)
                 .name(request.getName())
-                .provider("LOCAL")
-                .isWithdrawn("N")
-                .isDeleted("N")
                 .build();
         
         // DB에 저장
