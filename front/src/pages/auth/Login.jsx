@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import useUserStore from '../../store/useUserStore';
 import { authApi } from '../../services/api';
+import logo from '../../assets/images/logo.png';
 
 export default function Login() {
   const [searchParams] = useSearchParams();
@@ -92,7 +93,13 @@ export default function Login() {
   return (
     <div className="w-full max-w-6xl grid grid-cols-2 gap-16">
       <div className="flex items-center justify-start">
-        <h1 className="text-8xl font-extrabold text-slate-700 leading-none">Linkle</h1>
+        <Link to="/">
+          <img
+            src={logo}
+            alt="Linkle 로고"
+            className="w-80 h-auto object-contain cursor-pointer hover:opacity-90 transition-opacity"
+          />
+        </Link>
       </div>
 
       <div className="flex justify-end">
