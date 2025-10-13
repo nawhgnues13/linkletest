@@ -30,7 +30,7 @@ public class EmailController {
         @ApiResponse(responseCode = "200", description = "인증 성공"),
         @ApiResponse(responseCode = "400", description = "인증 실패")
     })
-    public ResponseEntity<Void> verifyEmail(@RequestParam String token) {
+    public ResponseEntity<Void> verifyEmail(@RequestParam("token") String token) {
         log.info("이메일 인증 요청: {}", token);
         emailService.verifyToken(token);
         return ResponseEntity.ok().build();

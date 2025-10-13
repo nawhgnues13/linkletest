@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +14,8 @@ import com.ggamakun.linkle.domain.member.entity.Member;
 import com.ggamakun.linkle.domain.member.repository.IMemberRepository;
 import com.ggamakun.linkle.global.exception.BadRequestException;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -89,26 +91,58 @@ public class EmailService {
     }
     
     private void sendEmail(String to, String token) {
-        try {
+    	try {
             String verificationUrl = frontendUrl + "/auth/verify-email?token=" + token;
             
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(to);
-            message.setSubject("[링클] 이메일 인증을 완료해주세요");
-            message.setText(
-                "링클에 가입해주셔서 감사합니다.\n\n" +
-                "아래 링크를 클릭하여 이메일 인증을 완료해주세요.\n\n" +
-                verificationUrl + "\n\n" +
-                "이 링크는 24시간 동안 유효합니다.\n\n" +
-                "본인이 가입하지 않으셨다면 이 메일을 무시하셔도 됩니다."
-            );
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             
-            mailSender.send(message);
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject("[링클] 이메일 인증을 완료해주세요");
+            
+            String htmlContent = buildHtmlEmail(verificationUrl);
+            helper.setText(htmlContent, true);
+            
+            mailSender.send(mimeMessage);
             log.info("인증 이메일 전송 성공: {}", to);
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             log.error("이메일 전송 실패: {}", to, e);
             throw new BadRequestException("이메일 전송에 실패했습니다.");
         }
+    }
+    
+    private String buildHtmlEmail(String verificationUrl) {
+    	return "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "    <meta charset='UTF-8'>" +
+                "    <meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "</head>" +
+                "<body style='margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;'>" +
+                "    <div style='max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>" +
+                "        <div style='background-color: #4ca8ff; padding: 30px; text-align: center;'>" +
+                "            <h1 style='color: #ffffff; margin: 0; font-size: 28px;'>링클</h1>" +
+                "        </div>" +
+                "        <div style='padding: 40px 30px;'>" +
+                "            <h2 style='color: #333333; margin-top: 0; font-size: 24px;'>이메일 인증</h2>" +
+                "            <p style='color: #666666; line-height: 1.6; font-size: 16px;'>링클에 가입해주셔서 감사합니다.</p>" +
+                "            <p style='color: #666666; line-height: 1.6; font-size: 16px;'>아래 버튼을 클릭하여 이메일 인증을 완료해주세요.</p>" +
+                "            <div style='text-align: center; margin: 30px 0;'>" +
+                "                <a href='" + verificationUrl + "' style='display: inline-block; background-color: #4ca8ff; color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 6px; font-size: 16px; font-weight: bold;'>이메일 인증하기</a>" +
+                "            </div>" +
+                "            <div style='background-color: #f9f9f9; padding: 20px; border-radius: 6px; margin: 20px 0;'>" +
+                "                <p style='color: #666666; margin: 0; font-size: 14px; line-height: 1.6;'>버튼이 작동하지 않는 경우 아래 링크를 복사하여 브라우저에 붙여넣어주세요:</p>" +
+                "                <p style='color: #4ca8ff; margin: 10px 0 0 0; font-size: 14px; word-break: break-all;'>" + verificationUrl + "</p>" +
+                "            </div>" +
+                "            <p style='color: #999999; font-size: 14px; line-height: 1.6; margin-bottom: 0;'>이 링크는 24시간 동안 유효합니다.</p>" +
+                "            <p style='color: #999999; font-size: 14px; line-height: 1.6; margin-top: 10px;'>본인이 가입하지 않으셨다면 이 메일을 무시하셔도 됩니다.</p>" +
+                "        </div>" +
+                "        <div style='background-color: #f9f9f9; padding: 20px 30px; text-align: center; border-top: 1px solid #eeeeee;'>" +
+                "            <p style='color: #999999; margin: 0; font-size: 12px;'>이 메일은 링클 회원가입 시 자동으로 발송되었습니다.</p>" +
+                "        </div>" +
+                "    </div>" +
+                "</body>" +
+                "</html>";
     }
 }
