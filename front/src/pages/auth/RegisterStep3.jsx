@@ -11,6 +11,7 @@ export default function RegisterStep3() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [error, setError] = useState('');
   const [memberEmail, setMemberEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!memberId) {
@@ -56,12 +57,16 @@ export default function RegisterStep3() {
       return;
     }
 
+    setIsLoading(true);
+
     try {
       await authApi.registerStep3(memberId, selectedCategories);
       navigate('/signup/complete', { state: { email: memberEmail } });
     } catch (error) {
       console.error('3단계 에러:', error);
       alert(error.message || '관심사 등록에 실패했습니다.');
+    } finally {
+      setIsLoading(false); // 추가
     }
   };
 
@@ -128,9 +133,14 @@ export default function RegisterStep3() {
 
         <button
           type="submit"
-          className="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary-hover transition-colors"
+          disabled={isLoading}
+          className={`w-full py-3 rounded-lg font-medium transition-colors ${
+            isLoading
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-primary text-white hover:bg-primary-hover'
+          }`}
         >
-          완료
+          {isLoading ? '처리 중...' : '완료'}
         </button>
       </form>
     </div>
