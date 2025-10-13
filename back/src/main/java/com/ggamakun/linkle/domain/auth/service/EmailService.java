@@ -59,7 +59,7 @@ public class EmailService {
     }
     
     @Transactional
-    public boolean verifyToken(String token) {
+    public void verifyToken(String token) {
         Member member = memberRepository.findByVerificationToken(token);
         
         if (member == null) {
@@ -77,8 +77,6 @@ public class EmailService {
         memberRepository.updateMember(member);
         
         log.info("이메일 인증 완료: {}", member.getEmail());
-        
-        return true;
     }
     
     public boolean isVerified(String email) {
