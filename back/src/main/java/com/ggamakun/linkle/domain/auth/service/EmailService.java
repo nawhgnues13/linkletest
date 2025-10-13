@@ -36,7 +36,7 @@ public class EmailService {
     
     @Transactional
     public void sendVerificationEmail(String email) {
-        Member member = memberRepository.findByEmail(email);
+        Member member = memberRepository.findByEmailForAuth(email);
         
         if (member == null) {
             throw new BadRequestException("존재하지 않는 이메일입니다.");
@@ -80,7 +80,7 @@ public class EmailService {
     }
     
     public boolean isVerified(String email) {
-        Member member = memberRepository.findByEmail(email);
+        Member member = memberRepository.findByEmailForAuth(email);
         return member != null && "Y".equals(member.getEmailVerified());
     }
     

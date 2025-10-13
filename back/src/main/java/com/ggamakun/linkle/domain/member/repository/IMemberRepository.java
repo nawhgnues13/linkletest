@@ -9,7 +9,7 @@ import com.ggamakun.linkle.domain.member.entity.Member;
 public interface IMemberRepository {
     
     // 이메일로 회원 조회
-    Member findByEmail(String email);
+    Member findByEmailForAuth(String email);
     
     // 회원 등록
     int insertMember(Member member);

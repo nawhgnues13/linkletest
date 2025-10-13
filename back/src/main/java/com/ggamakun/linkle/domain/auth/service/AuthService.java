@@ -66,7 +66,7 @@ public class AuthService {
         log.info("로그인 시도: {}", request.getEmail());
         
         // 회원 조회
-        Member member = memberRepository.findByEmail(request.getEmail());
+        Member member = memberRepository.findByEmailForAuth(request.getEmail());
         
         if (member == null) {
             throw new BadRequestException("이메일 또는 비밀번호가 올바르지 않습니다.");
