@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import useUserStore from '../../store/useUserStore';
 import { authApi } from '../../services/api';
+import logo from '../../assets/images/logo.png';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -17,11 +18,12 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
-            <Link
-              to="/"
-              className="text-2xl font-bold text-gray-900 hover:text-primary transition-colors"
-            >
-              Linkle
+            <Link to="/">
+              <img
+                src={logo}
+                alt="Linkle 로고"
+                className="h-6 w-auto object-contain cursor-pointer hover:opacity-90 transition-opacity"
+              />
             </Link>
 
             <nav className="flex items-center space-x-8">
