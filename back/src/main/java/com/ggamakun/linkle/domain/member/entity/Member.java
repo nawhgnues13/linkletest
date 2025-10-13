@@ -1,7 +1,6 @@
 package com.ggamakun.linkle.domain.member.entity;
 
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 import lombok.AllArgsConstructor;
@@ -21,19 +20,19 @@ public class Member {
     private String password;
     private String name;
     private String nickname;
-    private Date birthDate;
+    private Timestamp birthDate;
     private String gender;
     private String sido;
     private String sigungu;
     private String description;
     private String interests;
-    private Date joinDate;
+    private Timestamp joinDate;
     private String isWithdrawn;
-    private Date leaveDate;
+    private Timestamp leaveDate;
     private Integer createdBy;
-    private Date createdAt;
+    private Timestamp createdAt;
     private Integer updatedBy;
-    private Date updatedAt;
+    private Timestamp updatedAt;
     private String provider;
     private String providerId;
     private String isDeleted;

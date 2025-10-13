@@ -1,6 +1,6 @@
 package com.ggamakun.linkle.domain.member.service;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ public class MemberService {
      * 기본 정보 업데이트 (닉네임, 생년월일, 성별, 주소)
      */
     @Transactional
-    public void updateBasicInfo(Integer memberId, String nickname, Date birthDate, 
+    public void updateBasicInfo(Integer memberId, String nickname, Timestamp birthDate, 
                                 String gender, String sido, String sigungu) {
         log.info("회원 기본 정보 업데이트 시작 - Member ID: {}", memberId);
         

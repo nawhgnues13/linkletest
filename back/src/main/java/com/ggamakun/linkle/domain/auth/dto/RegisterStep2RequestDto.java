@@ -1,6 +1,6 @@
 package com.ggamakun.linkle.domain.auth.dto;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -25,8 +25,8 @@ public class RegisterStep2RequestDto {
     private String nickname;
     
     @NotNull(message = "생년월일을 입력해주세요.")
-    @Schema(description = "생년월일", example = "1990-01-01")
-    private Date birthDate;
+    @Schema(description = "생년월일", example = "1990-01-01 00:00:00")
+    private Timestamp birthDate;
     
     @NotBlank(message = "성별을 선택해주세요.")
     @Pattern(regexp = "^[MF]$", message = "성별은 M 또는 F만 가능합니다.")

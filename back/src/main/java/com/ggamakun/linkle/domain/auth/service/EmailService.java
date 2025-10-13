@@ -1,6 +1,5 @@
 package com.ggamakun.linkle.domain.auth.service;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
