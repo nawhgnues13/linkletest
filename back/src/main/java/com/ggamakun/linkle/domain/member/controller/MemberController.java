@@ -32,16 +32,9 @@ public class MemberController {
             description = "중복 체크 완료"
         )
     })
-    public ResponseEntity<Boolean> checkNickname(@RequestParam String nickname) {
+    public ResponseEntity<Boolean> checkNickname(@RequestParam("nickname") String nickname) {
         log.info("닉네임 중복 체크: {}", nickname);
         boolean isDuplicate = memberService.checkNicknameDuplicate(nickname);
         return ResponseEntity.ok(isDuplicate);
     }
-    
-    // TODO: 향후 추가될 API들
-    // - GET /member/profile : 회원 정보 조회
-    // - PUT /member/profile : 회원 정보 수정 (updateBasicInfo 사용)
-    // - PUT /member/interests : 관심사 수정 (updateInterests 사용)
-    // - PUT /member/password : 비밀번호 변경
-    // - DELETE /member : 회원 탈퇴
 }
