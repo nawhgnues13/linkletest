@@ -1,4 +1,4 @@
-package com.ggamakun.linkle.global.util;
+package com.ggamakun.linkle.global.security;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;

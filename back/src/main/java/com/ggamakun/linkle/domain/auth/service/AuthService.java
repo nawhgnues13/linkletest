@@ -10,7 +10,7 @@ import com.ggamakun.linkle.domain.auth.dto.RegisterStep1RequestDto;
 import com.ggamakun.linkle.domain.member.entity.Member;
 import com.ggamakun.linkle.domain.member.repository.IMemberRepository;
 import com.ggamakun.linkle.global.exception.BadRequestException;
-import com.ggamakun.linkle.global.util.JwtUtil;
+import com.ggamakun.linkle.global.security.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

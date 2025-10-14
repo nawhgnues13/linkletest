@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.ggamakun.linkle.global.util.JwtUtil;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -38,7 +36,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         "/login/oauth2",
         "/swagger-ui",
         "/v3/api-docs",
-        "/h2-console"
+        "/h2-console",
+        "/file"
     );
     
     @Override
