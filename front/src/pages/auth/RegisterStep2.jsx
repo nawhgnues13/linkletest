@@ -174,7 +174,7 @@ export default function RegisterStep2() {
             <button
               type="button"
               onClick={handleNicknameCheck}
-              className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors whitespace-nowrap"
+              className="px-4 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-hover transition-colors whitespace-nowrap"
             >
               중복확인
             </button>

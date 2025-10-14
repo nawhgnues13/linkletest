@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { authApi } from '../../services/api';
-import logo from '../../assets/images/logo.png';
 
 export default function FindPassword() {
   const [email, setEmail] = useState('');
@@ -52,10 +51,14 @@ export default function FindPassword() {
 
   return (
     <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-8">
+      <div className="mb-6">
+        <Link to="/login" className="inline-flex items-center text-gray-600 hover:text-gray-900">
+          <span className="mr-2">←</span>
+          <span className="text-sm">로그인으로 돌아가기</span>
+        </Link>
+      </div>
+
       <div className="text-center mb-8">
-        <div className="flex justify-center mb-4">
-          <img src={logo} alt="Linkle" className="h-12" />
-        </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">비밀번호 찾기</h2>
         <p className="text-gray-500 text-sm">가입 시 사용한 이메일을 입력해주세요</p>
       </div>
@@ -128,10 +131,6 @@ export default function FindPassword() {
           </button>
 
           <div className="text-center text-xs text-gray-500 py-2 space-x-2">
-            <Link to="/login" className="hover:underline">
-              로그인
-            </Link>
-            <span>|</span>
             <Link to="/signup" className="hover:underline">
               회원가입
             </Link>
