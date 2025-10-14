@@ -98,4 +98,44 @@ public class AuthService {
                 .message("로그인에 성공했습니다.")
                 .build();
     }
+    
+    /**
+     * 아이디 찾기
+     */
+    public String findId(String email) {
+        log.info("아이디 찾기 요청: {}", email);
+        
+        Member member = memberRepository.findByEmailForAuth(email);
+        
+        if (member == null) {
+            throw new BadRequestException("등록된 이메일을 찾을 수 없습니다.");
+        }
+        
+        log.info("아이디 찾기 성공: {}", email);
+        return maskEmail(member.getEmail());
+    }
+    
+    /**
+     * 이메일 마스킹
+     * 예: user@example.com -> u***@example.com
+     */
+    private String maskEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            return "";
+        }
+        
+        int atIndex = email.indexOf("@");
+        if (atIndex <= 0) {
+            return email;
+        }
+        
+        String localPart = email.substring(0, atIndex);
+        String domain = email.substring(atIndex);
+        
+        if (localPart.length() <= 1) {
+            return localPart + "***" + domain;
+        }
+        
+        return localPart.charAt(0) + "***" + domain;
+    }
 }

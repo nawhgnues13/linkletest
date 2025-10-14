@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ggamakun.linkle.domain.auth.dto.FindIdRequestDto;
+import com.ggamakun.linkle.domain.auth.dto.FindIdResponseDto;
 import com.ggamakun.linkle.domain.auth.dto.LoginRequestDto;
 import com.ggamakun.linkle.domain.auth.dto.LoginResponseDto;
 import com.ggamakun.linkle.domain.auth.dto.RegisterResponseDto;
@@ -218,6 +220,32 @@ public class AuthController {
                 .email(member.getEmail())
                 .name(member.getName())
                 .message("회원가입이 완료되었습니다.")
+                .build();
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    @PostMapping("/find-id")
+    @Operation(summary = "아이디 찾기", description = "이메일로 가입 여부를 확인합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "조회 성공",
+            content = @Content(schema = @Schema(implementation = FindIdResponseDto.class))
+        ),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "등록된 이메일을 찾을 수 없습니다.",
+            content = @Content
+        )
+    })
+    public ResponseEntity<FindIdResponseDto> findId(@RequestBody @Valid FindIdRequestDto request) {
+        log.info("아이디 찾기 요청: {}", request.getEmail());
+        
+        String email = authService.findId(request.getEmail());
+        
+        FindIdResponseDto response = FindIdResponseDto.builder()
+                .email(email)
                 .build();
         
         return ResponseEntity.ok(response);
