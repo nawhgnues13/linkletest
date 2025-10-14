@@ -39,7 +39,11 @@ public class SecurityConfig {
             .formLogin(formLogin -> formLogin.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
             
+            .cors(cors -> {})
+            
+            
             .authorizeHttpRequests(auth -> auth
+            	.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/member/**").permitAll()
@@ -50,7 +54,14 @@ public class SecurityConfig {
                 .requestMatchers("/login/oauth2/code/**").permitAll()
                 .requestMatchers("/login/oauth2/code/kakao").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-ui.html").permitAll()
+                .requestMatchers("GET","/posts/").permitAll()
+                .requestMatchers("GET","/posts/summary").permitAll()
+                .requestMatchers("GET","/posts/**").permitAll()
+                .requestMatchers("GET","/posts/*/comments/**").permitAll()
+                .requestMatchers("/comments/**").permitAll()
+                .requestMatchers("/notices/**").permitAll()
                 .anyRequest().authenticated()
+                
             )
             
             // OAuth2 로그인 설정

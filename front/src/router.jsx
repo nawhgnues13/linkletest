@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { MainLayout, AuthLayout } from './components/layout';
+import { MainLayout, AuthLayout, MyPageLayout } from './components/layout';
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -9,6 +9,13 @@ import OAuth2Callback from './pages/auth/OAuth2Callback';
 import FindId from './pages/auth/FindId';
 import VerifyEmail from './pages/auth/VerifyEmail';
 import RegisterComplete from './pages/auth/RegisterComplete';
+import FindPassword from './pages/auth/FindPassword';
+import ResetPassword from './pages/auth/ResetPassword';
+import Community from '@pages/community/Community';
+import CommunityDetail from './pages/community/CommunityDetail';
+import PostDetail from './pages/community/PostDetail';
+import PostWrite from './pages/community/PostWrite';
+import Notice from './pages/notice/Notice';
 
 const router = createBrowserRouter([
   // 메인 레이아웃
@@ -69,6 +76,22 @@ const router = createBrowserRouter([
       </AuthLayout>
     ),
   },
+  {
+    path: '/find-password',
+    element: (
+      <AuthLayout>
+        <FindPassword />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: '/reset-password',
+    element: (
+      <AuthLayout>
+        <ResetPassword />
+      </AuthLayout>
+    ),
+  },
   // OAuth2 콜백 처리 페이지
   {
     path: '/auth/callback',
@@ -77,6 +100,46 @@ const router = createBrowserRouter([
   {
     path: '/auth/verify-email',
     element: <VerifyEmail />,
+  },
+  {
+    path: '/community',
+    element: (
+      <MainLayout>
+        <Community />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/community/:tab',
+    element: (
+      <MainLayout>
+        <CommunityDetail />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/community/posts/:postId',
+    element: (
+      <MainLayout>
+        <PostDetail />
+      </MainLayout>
+    ),
+  },
+  {
+    path: 'community/write',
+    element: (
+      <MainLayout>
+        <PostWrite />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/notice',
+    element: (
+      <MyPageLayout>
+        <Notice />
+      </MyPageLayout>
+    ),
   },
 ]);
 

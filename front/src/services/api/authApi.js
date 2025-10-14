@@ -84,6 +84,30 @@ export const authApi = {
     return await response.json();
   },
 
+  // 비밀번호 찾기
+  forgotPassword: async (email) => {
+    const response = await post('/auth/forgot-password', { email });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || '비밀번호 찾기에 실패했습니다.');
+    }
+
+    return await response.json();
+  },
+
+  // 비밀번호 재설정
+  resetPassword: async (token, newPassword) => {
+    const response = await post('/auth/reset-password', { token, newPassword });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || '비밀번호 재설정에 실패했습니다.');
+    }
+
+    return await response.json();
+  },
+
   // 로그아웃
   logout: async () => {
     await post('/auth/logout', {});
