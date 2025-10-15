@@ -17,6 +17,7 @@ import CommunityDetail from './pages/community/CommunityDetail';
 import PostDetail from './pages/community/PostDetail';
 import PostWrite from './pages/community/PostWrite';
 import Notice from './pages/notice/Notice';
+import MyPageProfile from './pages/mypage/MyPageProfile';
 
 const router = createBrowserRouter([
   {
@@ -137,6 +138,14 @@ const router = createBrowserRouter([
     element: (
       <SidebarLayout sidebar={<MyPageSidebar />}>
         <Notice />
+      </SidebarLayout>
+    ),
+  },
+  {
+    path: '/mypage/profile',
+    element: (
+      <SidebarLayout sidebar={<MyPageSidebar />}>
+        <MyPageProfile />
       </SidebarLayout>
     ),
   },

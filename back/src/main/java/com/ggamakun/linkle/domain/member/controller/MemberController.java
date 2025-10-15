@@ -1,17 +1,28 @@
 package com.ggamakun.linkle.domain.member.controller;
 
+import java.util.stream.Collectors;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ggamakun.linkle.domain.member.dto.MemberProfileDto;
+import com.ggamakun.linkle.domain.member.dto.UpdateInterestsRequestDto;
 import com.ggamakun.linkle.domain.member.service.MemberService;
+import com.ggamakun.linkle.global.security.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,6 +34,50 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
     
     private final MemberService memberService;
+    
+    @GetMapping("/profile")
+    @Operation(
+        summary = "회원 프로필 조회", 
+        description = "현재 로그인한 회원의 프로필 정보를 조회합니다.",
+        security = @SecurityRequirement(name = "JWT")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    public ResponseEntity<MemberProfileDto> getProfile(
+            @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Integer memberId = userDetails.getMember().getMemberId();
+        log.info("회원 프로필 조회 요청 - Member ID: {}", memberId);
+        
+        MemberProfileDto profile = memberService.getProfile(memberId);
+        return ResponseEntity.ok(profile);
+    }
+    
+    @PutMapping("/interests")
+    @Operation(
+        summary = "관심사 수정", 
+        description = "회원의 관심사를 수정합니다.",
+        security = @SecurityRequirement(name = "JWT")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "수정 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    public ResponseEntity<Void> updateInterests(
+            @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody @Valid UpdateInterestsRequestDto request) {
+        Integer memberId = userDetails.getMember().getMemberId();
+        log.info("관심사 수정 요청 - Member ID: {}", memberId);
+        
+        String interests = request.getInterests().stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining("/"));
+        
+        memberService.updateInterests(memberId, interests);
+        return ResponseEntity.ok().build();
+    }
     
     @GetMapping("/check-nickname")
     @Operation(summary = "닉네임 중복 체크", description = "닉네임 중복 여부를 확인합니다.")
