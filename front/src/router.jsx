@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { MainLayout, AuthLayout, MyPageLayout } from './components/layout';
+import { MainLayout, AuthLayout, SidebarLayout } from './components/layout';
+import MyPageSidebar from './components/layout/MyPageSidebar';
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -18,7 +19,6 @@ import PostWrite from './pages/community/PostWrite';
 import Notice from './pages/notice/Notice';
 
 const router = createBrowserRouter([
-  // 메인 레이아웃
   {
     path: '/',
     element: (
@@ -27,7 +27,6 @@ const router = createBrowserRouter([
       </MainLayout>
     ),
   },
-  // 인증 레이아웃
   {
     path: '/login',
     element: (
@@ -136,9 +135,9 @@ const router = createBrowserRouter([
   {
     path: '/notice',
     element: (
-      <MyPageLayout>
+      <SidebarLayout sidebar={<MyPageSidebar />}>
         <Notice />
-      </MyPageLayout>
+      </SidebarLayout>
     ),
   },
 ]);
