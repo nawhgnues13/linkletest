@@ -6,6 +6,15 @@ export const memberApi = {
     return await get('/member/profile');
   },
 
+  updateProfile: async (data) => {
+    const response = await put('/member/profile', data);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || '프로필 수정에 실패했습니다.');
+    }
+  },
+
   // 관심사 수정
   updateInterests: async (interests) => {
     const response = await put('/member/interests', { interests });
@@ -14,5 +23,9 @@ export const memberApi = {
       const error = await response.json();
       throw new Error(error.message || '관심사 수정에 실패했습니다.');
     }
+  },
+
+  checkNickname: async (nickname) => {
+    return await get(`/member/check-nickname?nickname=${encodeURIComponent(nickname)}`);
   },
 };

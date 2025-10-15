@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ggamakun.linkle.domain.member.dto.MemberProfileDto;
+import com.ggamakun.linkle.domain.member.dto.UpdateBasicInfoRequestDto;
 import com.ggamakun.linkle.domain.member.dto.UpdateInterestsRequestDto;
 import com.ggamakun.linkle.domain.member.service.MemberService;
 import com.ggamakun.linkle.global.security.CustomUserDetails;
@@ -52,6 +53,35 @@ public class MemberController {
         
         MemberProfileDto profile = memberService.getProfile(memberId);
         return ResponseEntity.ok(profile);
+    }
+    
+    @PutMapping("/profile")
+    @Operation(
+        summary = "기본 정보 수정", 
+        description = "회원의 기본 정보(닉네임, 주소, 소개)를 수정합니다.",
+        security = @SecurityRequirement(name = "JWT")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "수정 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    public ResponseEntity<Void> updateBasicInfo(
+            @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody @Valid UpdateBasicInfoRequestDto request) {
+        Integer memberId = userDetails.getMember().getMemberId();
+        log.info("기본 정보 수정 요청 - Member ID: {}", memberId);
+        
+        memberService.updateBasicInfo(
+            memberId, 
+            request.getNickname(), 
+            null,
+            null,
+            request.getSido(), 
+            request.getSigungu(),
+            request.getDescription()
+        );
+        return ResponseEntity.ok().build();
     }
     
     @PutMapping("/interests")

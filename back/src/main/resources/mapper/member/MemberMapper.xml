@@ -139,6 +139,7 @@
             <if test="gender != null">gender = #{gender},</if>
             <if test="sido != null">sido = #{sido},</if>
             <if test="sigungu != null">sigungu = #{sigungu},</if>
+            <if test="description != null">description = #{description},</if>
             <if test="interests != null">interests = #{interests},</if>
             <if test="emailVerified != null">email_verified = #{emailVerified},</if>
             <if test="verificationToken != null">verification_token = #{verificationToken},</if>

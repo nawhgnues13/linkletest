@@ -54,12 +54,11 @@ export default function MyPageProfile() {
       <div className="flex flex-col items-center">
         <div className="w-32 h-32 rounded-full bg-gray-300 mb-6"></div>
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">{profile.nickname}</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">{profile.nickname}</h2>
 
         {profile.description && (
           <>
-            <p className="text-gray-600 mb-1">{profile.description}</p>
-            <p className="text-gray-600 mb-6">{profile.description}</p>
+            <p className="text-gray-600 mb-2">{profile.description}</p>
           </>
         )}
 
