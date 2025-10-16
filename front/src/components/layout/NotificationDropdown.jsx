@@ -99,10 +99,13 @@ const NotificationDropdown = ({ memberId }) => {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative text-gray-700 hover:text-primary transition-colors"
+        className="relative text-gray-700 hover:text-primary transition-colors pt-1"
         aria-label="알림"
       >
-        <BellIcon className="w-6 h-6" />
+        <BellIcon className="w-7 h-7" />
+        {hasUnreadNotifications && (
+          <span className="absolute top-1.5 right-0.5 block h-2 w-2 bg-red-500 rounded-full"></span>
+        )}
       </button>
 
       {isOpen && (

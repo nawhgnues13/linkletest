@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ggamakun.linkle.domain.member.dto.MemberProfileDto;
 import com.ggamakun.linkle.domain.member.dto.UpdateBasicInfoRequestDto;
 import com.ggamakun.linkle.domain.member.dto.UpdateInterestsRequestDto;
+import com.ggamakun.linkle.domain.member.dto.UpdatePasswordRequestDto;
 import com.ggamakun.linkle.domain.member.service.MemberService;
 import com.ggamakun.linkle.global.security.CustomUserDetails;
 
@@ -35,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
     
     private final MemberService memberService;
+    private final PasswordEncoder passwordEncoder;
     
     @GetMapping("/profile")
     @Operation(
@@ -121,5 +124,31 @@ public class MemberController {
         log.info("닉네임 중복 체크: {}", nickname);
         boolean isDuplicate = memberService.checkNicknameDuplicate(nickname);
         return ResponseEntity.ok(isDuplicate);
+    }
+    
+    @PutMapping("/password")
+    @Operation(
+        summary = "비밀번호 변경", 
+        description = "현재 비밀번호 확인 후 새 비밀번호로 변경합니다.",
+        security = @SecurityRequirement(name = "JWT")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공"),
+        @ApiResponse(responseCode = "400", description = "현재 비밀번호 불일치 또는 소셜 로그인 계정"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    public ResponseEntity<Void> updatePassword(
+            @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody @Valid UpdatePasswordRequestDto request) {
+        Integer memberId = userDetails.getMember().getMemberId();
+        log.info("비밀번호 변경 요청 - Member ID: {}", memberId);
+        
+        memberService.updatePassword(
+            memberId, 
+            request.getCurrentPassword(), 
+            request.getNewPassword(),
+            passwordEncoder
+        );
+        return ResponseEntity.ok().build();
     }
 }

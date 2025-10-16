@@ -16,4 +16,12 @@ export const memberApi = {
   checkNickname: async (nickname) => {
     return await get(`/member/check-nickname?nickname=${encodeURIComponent(nickname)}`);
   },
+
+  updatePassword: async (currentPassword, newPassword) => {
+    const response = await put('/member/password', {
+      currentPassword,
+      newPassword,
+    });
+    return response.data;
+  },
 };

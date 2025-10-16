@@ -160,4 +160,41 @@ public class MemberService {
 		}
 		return member;
 	}
+	
+	/**
+	 * 비밀번호 변경
+	 */
+	@Transactional
+	public void updatePassword(Integer memberId, String currentPassword, String newPassword, 
+	        org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
+	    log.info("비밀번호 변경 시작 - Member ID: {}", memberId);
+	    
+	    Member member = memberRepository.findByEmailForAuth(
+	        memberRepository.findById(memberId).getEmail()
+	    );
+	    
+	    if (member == null) {
+	        throw new BadRequestException("존재하지 않는 회원입니다.");
+	    }
+	    
+	    if (member.isSocialUser()) {
+	        throw new BadRequestException("소셜 로그인 계정은 비밀번호 변경을 사용할 수 없습니다.");
+	    }
+	    
+	    if (!passwordEncoder.matches(currentPassword, member.getPassword())) {
+	        throw new BadRequestException("현재 비밀번호가 일치하지 않습니다.");
+	    }
+	    
+	    String encodedPassword = passwordEncoder.encode(newPassword);
+	    member.setPassword(encodedPassword);
+	    member.setUpdatedBy(memberId);
+	    
+	    int result = memberRepository.updateMember(member);
+	    
+	    if (result <= 0) {
+	        throw new BadRequestException("비밀번호 변경에 실패했습니다.");
+	    }
+	    
+	    log.info("비밀번호 변경 완료 - Member ID: {}", memberId);
+	}
 }

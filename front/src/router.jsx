@@ -19,6 +19,7 @@ import PostWrite from './pages/community/PostWrite';
 import Notice from './pages/notice/Notice';
 import MyPageProfile from './pages/mypage/MyPageProfile';
 import ProfileEdit from './pages/mypage/ProfileEdit';
+import ChangePassword from './pages/mypage/ChangePassword';
 
 const router = createBrowserRouter([
   {
@@ -155,6 +156,14 @@ const router = createBrowserRouter([
     element: (
       <SidebarLayout sidebar={<MyPageSidebar />}>
         <ProfileEdit />
+      </SidebarLayout>
+    ),
+  },
+  {
+    path: '/mypage/password',
+    element: (
+      <SidebarLayout sidebar={<MyPageSidebar />}>
+        <ChangePassword />
       </SidebarLayout>
     ),
   },

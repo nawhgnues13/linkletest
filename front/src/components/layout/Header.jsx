@@ -83,13 +83,6 @@ const Header = () => {
                   동호회+
                 </Link>
 
-                {/* <button
-                  className="relative text-gray-700 hover:text-primary transition-colors"
-                  aria-label="알림"
-                >
-                  <BellIcon className="w-6 h-6" />
-                </button> */}
-
                 <NotificationDropdown memberId={user?.id} />
 
                 <div className="relative" ref={dropdownRef}>
