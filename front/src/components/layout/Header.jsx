@@ -1,10 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { BellIcon } from '@heroicons/react/24/outline';
+// import { BellIcon } from '@heroicons/react/24/outline';
 import useUserStore from '../../store/useUserStore';
 import { authApi } from '../../services/api';
 import logo from '../../assets/images/logo.png';
 import defaultProfile from '../../assets/images/default-profile.png';
+import NotificationDropdown from '../layout/NotificationDropdown';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -82,12 +83,14 @@ const Header = () => {
                   동호회+
                 </Link>
 
-                <button
+                {/* <button
                   className="relative text-gray-700 hover:text-primary transition-colors"
                   aria-label="알림"
                 >
                   <BellIcon className="w-6 h-6" />
-                </button>
+                </button> */}
+
+                <NotificationDropdown memberId={user?.memberId} />
 
                 <div className="relative" ref={dropdownRef}>
                   <button

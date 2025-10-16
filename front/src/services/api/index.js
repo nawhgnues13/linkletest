@@ -3,3 +3,4 @@ export { categoryApi } from './categoryApi';
 export { postApi } from './postApi';
 export { clubApi } from './clubApi';
 export { memberApi } from './memberApi';
+export { notificationApi } from './notificationApi';
