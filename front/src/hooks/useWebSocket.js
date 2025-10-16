@@ -5,6 +5,11 @@ import { Client } from '@stomp/stompjs';
 export const useWebSocket = (memberId, onNotification) => {
   const clientRef = useRef(null);
   const [connected, setConnected] = useState(false);
+  const onNotificationRef = useRef(onNotification);
+
+  useEffect(() => {
+    onNotificationRef.current = onNotification;
+  }, [onNotification]);
 
   useEffect(() => {
     if (!memberId) return;
@@ -27,8 +32,8 @@ export const useWebSocket = (memberId, onNotification) => {
       client.subscribe(`/user/${memberId}/queue/notifications`, (message) => {
         const notification = JSON.parse(message.body);
         console.log('알림 수신:', notification);
-        if (onNotification) {
-          onNotification(notification);
+        if (onNotificationRef.current) {
+          onNotificationRef.current(notification);
         }
       });
     };
@@ -51,7 +56,7 @@ export const useWebSocket = (memberId, onNotification) => {
         clientRef.current.deactivate();
       }
     };
-  }, [memberId, onNotification]);
+  }, [memberId]);
 
   return { connected };
 };

@@ -90,7 +90,7 @@ const Header = () => {
                   <BellIcon className="w-6 h-6" />
                 </button> */}
 
-                <NotificationDropdown memberId={user?.memberId} />
+                <NotificationDropdown memberId={user?.id} />
 
                 <div className="relative" ref={dropdownRef}>
                   <button
