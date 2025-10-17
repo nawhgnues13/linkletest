@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ public class MemberService {
 
 	private final IMemberRepository memberRepository;
 	private final ICategoryRepository categoryRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	/**
 	 * 회원 프로필 조회
@@ -165,8 +167,7 @@ public class MemberService {
 	 * 비밀번호 변경
 	 */
 	@Transactional
-	public void updatePassword(Integer memberId, String currentPassword, String newPassword, 
-	        org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
+	public void updatePassword(Integer memberId, String currentPassword, String newPassword) {
 	    log.info("비밀번호 변경 시작 - Member ID: {}", memberId);
 	    
 	    Member member = memberRepository.findByEmailForAuth(
@@ -196,5 +197,43 @@ public class MemberService {
 	    }
 	    
 	    log.info("비밀번호 변경 완료 - Member ID: {}", memberId);
+	}
+	
+	/**
+	 * 회원 탈퇴
+	 */
+	@Transactional
+	public void withdrawAccount(Integer memberId, String password) {
+	    log.info("회원 탈퇴 시작 - Member ID: {}", memberId);
+	    
+	    Member member = memberRepository.findByEmailForAuth(
+	        memberRepository.findById(memberId).getEmail()
+	    );
+	    
+	    if (member == null) {
+	        throw new BadRequestException("존재하지 않는 회원입니다.");
+	    }
+	    
+	    if (member.isLocalUser()) {
+	        if (password == null || password.trim().isEmpty()) {
+	            throw new BadRequestException("비밀번호를 입력해주세요.");
+	        }
+	        
+	        if (!passwordEncoder.matches(password, member.getPassword())) {
+	            throw new BadRequestException("비밀번호가 일치하지 않습니다.");
+	        }
+	    }
+	    
+	    member.setIsDeleted("Y");
+	    member.setIsWithdrawn("Y");
+	    member.setUpdatedBy(memberId);
+	    
+	    int result = memberRepository.updateMember(member);
+	    
+	    if (result <= 0) {
+	        throw new BadRequestException("회원 탈퇴에 실패했습니다.");
+	    }
+	    
+	    log.info("회원 탈퇴 완료 - Member ID: {}", memberId);
 	}
 }

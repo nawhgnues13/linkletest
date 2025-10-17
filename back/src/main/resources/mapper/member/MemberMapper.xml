@@ -144,6 +144,9 @@
             <if test="emailVerified != null">email_verified = #{emailVerified},</if>
             <if test="verificationToken != null">verification_token = #{verificationToken},</if>
             <if test="tokenExpiryDate != null">token_expiry_date = #{tokenExpiryDate},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+            <if test="isWithdrawn != null">is_withdrawn = #{isWithdrawn},</if>
+            <if test='isWithdrawn != null and isWithdrawn.equals("Y")'>leave_date = SYSDATE,</if>
             updated_by = #{updatedBy},
             updated_at = SYSDATE
         WHERE member_id = #{memberId}

@@ -55,8 +55,8 @@ export const put = async (url, data) => {
   return response;
 };
 
-export const del = async (url) => {
-  const response = await axiosInstance.delete(url);
+export const del = async (url, data) => {
+  const response = await axiosInstance.delete(url, { data });
   return response;
 };
 

@@ -4,7 +4,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +16,7 @@ import com.ggamakun.linkle.domain.member.dto.MemberProfileDto;
 import com.ggamakun.linkle.domain.member.dto.UpdateBasicInfoRequestDto;
 import com.ggamakun.linkle.domain.member.dto.UpdateInterestsRequestDto;
 import com.ggamakun.linkle.domain.member.dto.UpdatePasswordRequestDto;
+import com.ggamakun.linkle.domain.member.dto.WithdrawAccountRequestDto;
 import com.ggamakun.linkle.domain.member.service.MemberService;
 import com.ggamakun.linkle.global.security.CustomUserDetails;
 
@@ -37,7 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
     
     private final MemberService memberService;
-    private final PasswordEncoder passwordEncoder;
     
     @GetMapping("/profile")
     @Operation(
@@ -146,9 +146,31 @@ public class MemberController {
         memberService.updatePassword(
             memberId, 
             request.getCurrentPassword(), 
-            request.getNewPassword(),
-            passwordEncoder
+            request.getNewPassword()
         );
+        return ResponseEntity.ok().build();
+    }
+    
+    @DeleteMapping("/withdrawal")
+    @Operation(
+        summary = "회원 탈퇴", 
+        description = "회원 탈퇴를 진행합니다. 일반 회원은 비밀번호 확인이 필요합니다.",
+        security = @SecurityRequirement(name = "JWT")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "탈퇴 성공"),
+        @ApiResponse(responseCode = "400", description = "비밀번호 불일치"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    public ResponseEntity<Void> withdrawAccount(
+            @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody(required = false) WithdrawAccountRequestDto request) {
+        Integer memberId = userDetails.getMember().getMemberId();
+        log.info("회원 탈퇴 요청 - Member ID: {}", memberId);
+        
+        String password = request != null ? request.getPassword() : null;
+        memberService.withdrawAccount(memberId, password);
+        
         return ResponseEntity.ok().build();
     }
 }

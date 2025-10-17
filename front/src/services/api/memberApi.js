@@ -1,4 +1,4 @@
-import { get, put } from '../apiClient';
+import { get, put, del } from '../apiClient';
 
 export const memberApi = {
   getProfile: async () => {
@@ -22,6 +22,11 @@ export const memberApi = {
       currentPassword,
       newPassword,
     });
+    return response.data;
+  },
+
+  withdrawAccount: async (password) => {
+    const response = await del('/member/withdrawal', password ? { password } : {});
     return response.data;
   },
 };
