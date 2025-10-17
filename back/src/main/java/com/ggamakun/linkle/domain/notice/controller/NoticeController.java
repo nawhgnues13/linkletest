@@ -1,5 +1,6 @@
 package com.ggamakun.linkle.domain.notice.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,12 @@ public class NoticeController {
 		return noticeService.noticeList();
 	}
 	
+	//동호회 공지사항 조회
+	@GetMapping("/club/{clubid}")
+	public List<NoticeSummary> getNoticesByClubId(@PathVariable("clubid") Integer clubId){
+		return noticeService.getNoticesByClubId(clubId);
+	}
+	
 	//공지사항 상세조회
 	@GetMapping("/{postid}")
 	public NoticeDetail getNotice(@PathVariable("postid") Integer postId) {
@@ -59,12 +66,22 @@ public class NoticeController {
 	
 	//공지사항 수정
 	@PutMapping("/{postid}")
-	public ResponseEntity<NoticeDetail> updateNotice(@PathVariable("postid") Integer postId, UpdateNoticeRequest request,
+	public ResponseEntity<NoticeDetail> updateNotice(@PathVariable("postid") Integer postId, @RequestBody UpdateNoticeRequest request,
 													 @Parameter(hidden = true)@AuthenticationPrincipal CustomUserDetails userDetails){
 		Integer memberId = userDetails.getMember().getMemberId();
 		NoticeDetail updated = noticeService.updateNotice(postId,request,memberId);
 		
 		return ResponseEntity.ok(updated);
+	}
+	
+	//공지사항 고정/해제
+	@PutMapping("/{postid}/pin")
+	public ResponseEntity<Void> togglePin(@PathVariable("postid") Integer postId,
+										  @Parameter(hidden=true)@AuthenticationPrincipal CustomUserDetails userDetails){
+		Integer memberId = userDetails.getMember().getMemberId();
+		noticeService.togglePin(postId,memberId);
+		
+		return ResponseEntity.ok().build();
 	}
 	
 	//공지사항 삭제

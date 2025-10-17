@@ -13,7 +13,9 @@ import {
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { postApi } from '../../services/api/postApi';
 import { commentApi } from '../../services/api/commentApi';
+import { fileApi } from '../../services/api/fileApi';
 import useUserStore from '../../store/useUserStore';
+import DEFAULT_PROFILE from '../../assets/images/default-profile.png';
 
 function KebabMenu({ onEdit, onDelete }) {
   const [open, setOpen] = useState(false);
@@ -90,7 +92,7 @@ export default function PostDetail() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [errorType, setErrorType] = useState(null); // 'UNAUTHORIZED' | 'FORBIDDEN' | 'NOT_FOUND'
+  const [errorType, setErrorType] = useState(null);
 
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -105,7 +107,17 @@ export default function PostDetail() {
   const [editingComment, setEditingComment] = useState(null);
   const [editContent, setEditContent] = useState('');
 
-  // ✅ DOMPurify 설정 - ReactQuill에서 사용하는 태그만 허용
+  // 🆕 fileId로 조회한 이미지 URL들
+  const [imageUrls, setImageUrls] = useState([]);
+  const [imagesLoading, setImagesLoading] = useState(false);
+
+  const getProfileSrc = (url) => {
+    if (!url || url.trim() === '' || url === 'null') {
+      return DEFAULT_PROFILE;
+    }
+    return url;
+  };
+
   const sanitizeConfig = {
     ALLOWED_TAGS: [
       'p',
@@ -191,7 +203,45 @@ export default function PostDetail() {
     };
   }, [postId, isAuthenticated]);
 
-  // 🔧 fix: 불필요한 ) 제거
+  // 🆕 post.images에서 fileId를 파싱하여 실제 이미지 URL 조회
+  useEffect(() => {
+    const fetchImages = async () => {
+      if (!post || !post.images) {
+        setImageUrls([]);
+        return;
+      }
+
+      try {
+        setImagesLoading(true);
+
+        // post.images는 "1/2/3" 형태의 fileId 문자열
+        const fileIds = post.images
+          .split('/')
+          .map((id) => parseInt(id.trim()))
+          .filter((id) => !isNaN(id));
+
+        if (fileIds.length === 0) {
+          setImageUrls([]);
+          return;
+        }
+
+        // fileApi.getFiles()로 파일 정보 조회
+        const files = await fileApi.getFiles(fileIds);
+
+        // fileUrl만 추출하여 상태에 저장
+        const urls = files.map((file) => file.fileLink).filter(Boolean);
+        setImageUrls(urls);
+      } catch (err) {
+        console.error('이미지 조회 실패:', err);
+        setImageUrls([]);
+      } finally {
+        setImagesLoading(false);
+      }
+    };
+
+    fetchImages();
+  }, [post]);
+
   const canManage = isAuthenticated && user && post && Number(user.id) === Number(post.createdBy);
 
   const handleLikeToggle = async () => {
@@ -334,7 +384,6 @@ export default function PostDetail() {
     }
   };
 
-  // ✅ 부모/대댓글 모두 포함(삭제된 것은 제외)하여 총 댓글 수 계산
   const totalComments = useMemo(() => {
     return comments.reduce((sum, c) => {
       const parent = c.isDeleted !== 'Y' ? 1 : 0;
@@ -397,9 +446,14 @@ export default function PostDetail() {
       <div className="bg-white">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <UserCircleIcon className="w-10 h-10 text-gray-300" />
+            <img
+              src={getProfileSrc(post.profileUrl)}
+              alt={post.authorNickname || '프로필'}
+              className="w-10 h-10 rounded-full object-cover bg-gray-100"
+            />
+
             <div>
-              <div className="font-semibold text-gray-800">{post.authorNickName || '익명'}</div>
+              <div className="font-semibold text-gray-800">{post.authorNickname || '익명'}</div>
               <div className="text-xs text-gray-400">
                 {post.createdAt} 조회 {post.viewCount}
               </div>
@@ -410,20 +464,27 @@ export default function PostDetail() {
 
         <h1 className="text-2xl font-bold text-gray-800 mb-4">{post.title}</h1>
 
-        {post.images && (
-          <div className="mb-6">
-            <img
-              src={post.images.split(',')[0]}
-              alt="게시글 이미지"
-              className="w-full max-w-2xl"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
+        {/* 🆕 fileId 기반 이미지 표시 */}
+        {imagesLoading ? (
+          <div className="mb-6 flex items-center justify-center h-64 bg-gray-100 rounded">
+            <div className="text-gray-500">이미지를 불러오는 중...</div>
           </div>
-        )}
+        ) : imageUrls.length > 0 ? (
+          <div className="mb-6 space-y-4">
+            {imageUrls.map((url, index) => (
+              <img
+                key={index}
+                src={url}
+                alt={`게시글 이미지 ${index + 1}`}
+                className="w-full max-w-2xl bg-gray-100"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            ))}
+          </div>
+        ) : null}
 
-        {/* ✅ DOMPurify로 HTML 정화 - XSS 공격 완벽 차단! */}
         <div
           className="text-gray-700 mb-6 prose max-w-none"
           dangerouslySetInnerHTML={{
@@ -483,7 +544,11 @@ export default function PostDetail() {
           {comments.map((comment) => (
             <div key={comment.commentId} className="border-b border-gray-100 pb-4">
               <div className="flex items-start gap-3">
-                <UserCircleIcon className="w-8 h-8 text-gray-300 flex-shrink-0 mt-1" />
+                <img
+                  src={getProfileSrc(comment.profileUrl)}
+                  alt={comment.authorNickname || comment.authorName || '프로필'}
+                  className="w-8 h-8 rounded-full object-cover bg-gray-100 flex-shrink-0 mt-1"
+                />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-2">
                     <div>
@@ -595,7 +660,11 @@ export default function PostDetail() {
                     <div className="mt-3 ml-6 space-y-4 pl-4 pt-3 border-t border-gray-100">
                       {comment.replies.map((reply) => (
                         <div key={reply.commentId} className="flex items-start gap-2">
-                          <UserCircleIcon className="w-6 h-6 text-gray-300 flex-shrink-0 mt-1" />
+                          <img
+                            src={getProfileSrc(reply.profileUrl)}
+                            alt={reply.authorNickname || reply.authorName || '프로필'}
+                            className="w-6 h-6 rounded-full object-cover bg-gray-100 flex-shrink-0 mt-1"
+                          />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-1">
                               <div>

@@ -21,7 +21,9 @@ import MyPageProfile from './pages/mypage/MyPageProfile';
 import ProfileEdit from './pages/mypage/ProfileEdit';
 import ChangePassword from './pages/mypage/ChangePassword';
 import AccountWithdrawal from './pages/mypage/AccountWithdrawal';
-
+import NoticeDetail from './pages/notice/NoticeDetail';
+import NoticeWrite from './pages/notice/NoticeWrite';
+import NoticeEdit from './pages/notice/NoticeEdit';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -175,6 +177,22 @@ const router = createBrowserRouter([
         <AccountWithdrawal />
       </SidebarLayout>
     ),
+  },
+  {
+    path: '/clubs/:clubId/notice',
+    element: <Notice />,
+  },
+  {
+    path: '/clubs/:clubId/notice/:noticeId',
+    element: <NoticeDetail />,
+  },
+  {
+    path: '/clubs/:clubId/notice/write',
+    element: <NoticeWrite />,
+  },
+  {
+    path: '/clubs/:clubId/notice/edit/:postId',
+    element: <NoticeEdit />,
   },
 ]);
 

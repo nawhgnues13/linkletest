@@ -2,7 +2,8 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const axiosInstance = axios.create({
+// axios 인스턴스 생성
+const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
@@ -10,7 +11,7 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-axiosInstance.interceptors.response.use(
+apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
@@ -34,29 +35,29 @@ axiosInstance.interceptors.response.use(
 );
 
 export const apiRequest = async (url, options = {}) => {
-  return await axiosInstance({
+  return await apiClient({
     url,
     ...options,
   });
 };
 
 export const get = async (url) => {
-  const response = await axiosInstance.get(url);
+  const response = await apiClient.get(url);
   return response.data;
 };
 
 export const post = async (url, data) => {
-  const response = await axiosInstance.post(url, data);
+  const response = await apiClient.post(url, data);
   return response;
 };
 
 export const put = async (url, data) => {
-  const response = await axiosInstance.put(url, data);
+  const response = await apiClient.put(url, data);
   return response;
 };
 
 export const del = async (url, data) => {
-  const response = await axiosInstance.delete(url, { data });
+  const response = await apiClient.delete(url, { data });
   return response;
 };
 

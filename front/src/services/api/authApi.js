@@ -55,7 +55,13 @@ export const authApi = {
   },
 
   logout: async () => {
-    await post('/auth/logout', {});
+    try {
+      const response = await post('/auth/logout', {});
+      return response.data;
+    } catch (error) {
+      console.error('로그아웃 실패:', error);
+      throw error;
+    }
   },
 
   refreshToken: async (refreshToken) => {

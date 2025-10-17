@@ -19,12 +19,16 @@ public interface INoticeRepository {
 	
 	void increaseViewCount(Integer postId);
 
-	NoticeDetail findNoticeDetail(Integer postId);
+	NoticeDetail findNoticeDetail(@Param("postId") Integer postId);
 
 	Integer insertNotice(CreateNoticeRequest request);
 	
 	int updateNotice(@Param("postId") Integer postId, @Param("request") UpdateNoticeRequest request);
 
 	int deleteNotice(Integer postId);
+
+	List<NoticeSummary> getNoticesByClubId(@Param("clubId") Integer clubId);
+
+	int togglePin(@Param("postId") Integer postId, @Param("isPinned") String isPinned);
 
 }

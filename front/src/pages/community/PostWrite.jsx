@@ -1,15 +1,15 @@
-// src/pages/community/PostWrite.jsx - 무한 루프 수정
+// src/pages/community/PostWrite.jsx
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill-new';
 import 'quill/dist/quill.snow.css';
 import { clubApi } from '../../services/api/clubApi';
 import { postApi } from '../../services/api/postApi';
+import { fileApi } from '../../services/api/fileApi';
 
 export default function PostWrite() {
   const navigate = useNavigate();
   const editorRef = useRef(null);
-  const objectUrlsRef = useRef([]);
 
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,8 +17,8 @@ export default function PostWrite() {
   const [visibility, setVisibility] = useState('PUBLIC');
   const [title, setTitle] = useState('');
   const [html, setHtml] = useState('');
+  const [uploadedFiles, setUploadedFiles] = useState([]); // { fileId, fileUrl, originalFileName }
 
-  // 가입한 동호회 목록 가져오기
   useEffect(() => {
     const fetchJoinedClubs = async () => {
       try {
@@ -49,7 +49,33 @@ export default function PostWrite() {
     fetchJoinedClubs();
   }, []);
 
-  // ✅ useMemo로 modules 메모이제이션 - 무한 루프 방지
+  // 이미지 핸들러 - S3 업로드 후 DB에 저장하고 fileId 받기
+  const handleImageClick = () => {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.setAttribute('multiple', 'true');
+    input.onchange = async () => {
+      const files = Array.from(input.files || []);
+
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+
+        try {
+          // fileApi.uploadImage()는 { fileId, fileUrl, originalFileName } 반환
+          const uploadResponse = await fileApi.uploadImage(file);
+          setUploadedFiles((prev) => [...prev, uploadResponse]);
+          console.log('이미지 업로드 성공:', uploadResponse);
+        } catch (error) {
+          console.error('이미지 업로드 실패:', error);
+          alert('이미지 업로드에 실패했습니다.');
+        }
+      }
+    };
+    input.click();
+  };
+
+  // 이미지 버튼 포함된 toolbar
   const modules = useRef({
     toolbar: {
       container: [
@@ -62,13 +88,12 @@ export default function PostWrite() {
         ['clean'],
       ],
       handlers: {
-        image: () => openFilePicker(),
+        image: handleImageClick,
       },
     },
     clipboard: { matchVisual: false },
   }).current;
 
-  // ✅ formats도 useRef로 메모이제이션
   const formats = useRef([
     'header',
     'bold',
@@ -82,74 +107,17 @@ export default function PostWrite() {
     'blockquote',
     'code-block',
     'link',
-    'image',
   ]).current;
 
-  // ✅ onChange 핸들러 수정 - content, delta, source, editor 모두 받기
-  const handleEditorChange = (content, delta, source, editor) => {
-    // source가 'user'일 때만 업데이트 (무한 루프 방지)
+  const handleEditorChange = (content, delta, source) => {
     if (source === 'user') {
       setHtml(content);
     }
   };
 
-  useEffect(() => {
-    const quill = editorRef.current?.getEditor();
-    if (!quill) return;
-
-    const onPaste = async (e) => {
-      const items = e.clipboardData?.items || [];
-      for (const it of items) {
-        if (it.type?.startsWith('image/')) {
-          e.preventDefault();
-          const file = it.getAsFile();
-          if (file) insertLocalPreview(file);
-        }
-      }
-    };
-
-    const onDrop = async (e) => {
-      const files = e.dataTransfer?.files || [];
-      if (files.length) {
-        e.preventDefault();
-        for (const f of files) if (f.type.startsWith('image/')) insertLocalPreview(f);
-      }
-    };
-
-    quill.root.addEventListener('paste', onPaste);
-    quill.root.addEventListener('drop', onDrop);
-    return () => {
-      quill.root.removeEventListener('paste', onPaste);
-      quill.root.removeEventListener('drop', onDrop);
-    };
-  }, []); // ✅ 빈 의존성 배열
-
-  useEffect(() => {
-    return () => {
-      objectUrlsRef.current.forEach((u) => window.URL.revokeObjectURL(u));
-      objectUrlsRef.current = [];
-    };
-  }, []);
-
-  const openFilePicker = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = () => {
-      const file = input.files?.[0];
-      if (file) insertLocalPreview(file);
-    };
-    input.click();
-  };
-
-  const insertLocalPreview = (file) => {
-    const quill = editorRef.current?.getEditor();
-    if (!quill) return;
-    const url = window.URL.createObjectURL(file);
-    objectUrlsRef.current.push(url);
-    const range = quill.getSelection(true);
-    quill.insertEmbed(range.index, 'image', url, 'user');
-    quill.setSelection(range.index + 1, 0);
+  // 이미지 삭제
+  const handleImageRemove = (index) => {
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
@@ -160,11 +128,14 @@ export default function PostWrite() {
     try {
       const scope = visibility === 'PUBLIC' ? '전체' : '회원';
 
+      // fileId들을 '/'로 구분하여 문자열로 만듦
+      const images = uploadedFiles.length > 0 ? uploadedFiles.map((f) => f.fileId).join('/') : null;
+
       const postData = {
         clubId: parseInt(club),
         title: title.trim(),
         content: html,
-        images: null,
+        images: images, // "1/2/3" 형태
         postType: 'P',
         scope: scope,
       };
@@ -261,8 +232,7 @@ export default function PostWrite() {
         className="w-full border border-gray-300 rounded px-3 py-2 mb-4 outline-none"
       />
 
-      <div className="border border-gray-200 rounded">
-        {/* ✅ onChange에 handleEditorChange 사용 */}
+      <div className="border border-gray-200 rounded mb-4">
         <ReactQuill
           ref={editorRef}
           theme="snow"
@@ -274,6 +244,30 @@ export default function PostWrite() {
           style={{ minHeight: '400px' }}
         />
       </div>
+
+      {/* 업로드된 이미지 미리보기 */}
+      {uploadedFiles.length > 0 && (
+        <div className="border border-gray-200 rounded p-4">
+          <div className="text-sm font-semibold text-gray-700 mb-3">첨부된 이미지</div>
+          <div className="grid grid-cols-4 gap-3">
+            {uploadedFiles.map((file, index) => (
+              <div key={index} className="relative group">
+                <img
+                  src={file.fileUrl}
+                  alt={file.originalFileName || `첨부 ${index + 1}`}
+                  className="w-full h-24 object-cover rounded border border-gray-200 bg-gray-100"
+                />
+                <button
+                  onClick={() => handleImageRemove(index)}
+                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-lg leading-none"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

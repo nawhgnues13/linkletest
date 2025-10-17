@@ -4,3 +4,4 @@ export { postApi } from './postApi';
 export { clubApi } from './clubApi';
 export { memberApi } from './memberApi';
 export { notificationApi } from './notificationApi';
+export { noticeApi } from './noticeApi';
