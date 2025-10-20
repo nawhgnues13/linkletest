@@ -7,7 +7,7 @@ const ClubSidebar = () => {
   const { clubId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentClubId, setCurrentClub } = useUserStore();
+  const { setCurrentClub } = useUserStore();
 
   const [clubs, setClubs] = useState([]);
   const [open, setOpen] = useState(false);
@@ -18,24 +18,13 @@ const ClubSidebar = () => {
       try {
         const data = await clubApi.getJoinedClubs();
         setClubs(data || []);
-
-        if ((!clubId || clubId === 'undefined') && data?.length) {
-          const targetClub = data.find((c) => c.clubId === currentClubId) || data[0];
-          setCurrentClub(targetClub.clubId, targetClub.role);
-        } else if (clubId && data?.length) {
-          const currentClub = data.find((c) => String(c.clubId) === String(clubId));
-          if (currentClub) {
-            setCurrentClub(currentClub.clubId, currentClub.role);
-          }
-        }
       } catch (error) {
         console.error('동호회 목록 조회 실패:', error);
-        setClubs([]);
       }
     };
 
     fetchClubs();
-  }, [clubId, navigate, currentClubId, setCurrentClub]);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e) => {

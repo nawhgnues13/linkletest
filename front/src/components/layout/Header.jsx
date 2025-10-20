@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import useUserStore from '../../store/useUserStore';
-import { authApi, clubApi } from '../../services/api';
+import { authApi } from '../../services/api';
 import logo from '../../assets/images/logo.png';
 import defaultProfile from '../../assets/images/default-profile.png';
 import NotificationDropdown from '../layout/NotificationDropdown';
@@ -41,21 +41,10 @@ const Header = () => {
   const handleMyClubClick = async () => {
     setIsDropdownOpen(false);
 
-    if (!currentClubId) {
-      try {
-        const clubs = await clubApi.getJoinedClubs();
-        if (clubs && clubs.length > 0) {
-          setCurrentClub(clubs[0].clubId, clubs[0].role);
-          navigate(`/clubs/${clubs[0].clubId}/dashboard`);
-        } else {
-          showAlert('가입된 동호회가 없습니다.\n동호회에 먼저 가입해주세요.');
-        }
-      } catch (error) {
-        console.error('동호회 목록 조회 실패:', error);
-        showAlert('동호회 정보를 불러오는데 실패했습니다.');
-      }
-    } else {
+    if (currentClubId) {
       navigate(`/clubs/${currentClubId}/dashboard`);
+    } else {
+      showAlert('가입된 동호회가 없습니다.\n동호회에 먼저 가입해주세요.');
     }
   };
 
