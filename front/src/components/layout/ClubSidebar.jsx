@@ -22,7 +22,6 @@ const ClubSidebar = () => {
         if ((!clubId || clubId === 'undefined') && data?.length) {
           const targetClub = data.find((c) => c.clubId === currentClubId) || data[0];
           setCurrentClub(targetClub.clubId, targetClub.role);
-          //navigate(`/clubs/${targetClub.clubId}/notice`, { replace: true });
         } else if (clubId && data?.length) {
           const currentClub = data.find((c) => String(c.clubId) === String(clubId));
           if (currentClub) {
@@ -73,7 +72,6 @@ const ClubSidebar = () => {
   return (
     <aside className="w-64">
       <div className="bg-white rounded-lg shadow-sm sticky top-24 overflow-hidden">
-        {/* 동호회 선택 영역 */}
         <div ref={wrapRef} className="relative">
           <button
             onClick={() => setOpen((prev) => !prev)}
@@ -96,14 +94,13 @@ const ClubSidebar = () => {
             </svg>
           </button>
 
-          {/* 드롭다운 메뉴 */}
           {open && (
-            <div className="absolute left-0 right-0 top-full z-50 bg-white border-x border-b border-gray-200 shadow-lg max-h-80 overflow-y-auto">
+            <div className="absolute left-2 right-2 top-[calc(100%-8px)] z-50 bg-white border border-gray-200 rounded-lg shadow-xl max-h-80 overflow-y-auto">
               {clubs.map((club) => (
                 <button
                   key={club.clubId}
                   onClick={() => handleClubChange(club.clubId)}
-                  className={`w-full px-6 py-3 text-left transition-colors border-b border-gray-100 last:border-b-0 ${
+                  className={`w-full px-6 py-3 text-left transition-colors border-b border-gray-100 last:border-b-0 first:rounded-t-lg last:rounded-b-lg ${
                     String(club.clubId) === String(clubId)
                       ? 'bg-primary text-white font-medium'
                       : 'text-gray-700 hover:bg-gray-50'
@@ -116,20 +113,19 @@ const ClubSidebar = () => {
           )}
         </div>
 
-        {/* 메뉴 네비게이션 */}
         <nav className="p-4 pt-6">
           {menuItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
               className={`
-              block px-4 py-3 mb-1 rounded-lg text-sm font-medium transition-all
-              ${
-                isActive(item.path)
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }
-            `}
+                block px-4 py-3 mb-1 rounded-lg text-sm font-medium transition-all
+                ${
+                  isActive(item.path)
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }
+              `}
             >
               {item.label}
             </Link>
