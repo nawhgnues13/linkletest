@@ -1,18 +1,21 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import useUserStore from '../../store/useUserStore';
-import { authApi } from '../../services/api';
+import { authApi, clubApi } from '../../services/api';
 import logo from '../../assets/images/logo.png';
 import defaultProfile from '../../assets/images/default-profile.png';
 import NotificationDropdown from '../layout/NotificationDropdown';
 import ClubCreateModal from './ClubCreateModal';
+import AlertModal from '../common/AlertModal';
+import { useAlert } from '../../hooks/useAlert';
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, clearUser } = useUserStore();
+  const { user, isAuthenticated, clearUser, currentClubId, setCurrentClub } = useUserStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isClubModalOpen, setIsClubModalOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const { alertState, showAlert, closeAlert } = useAlert();
 
   const handleLogout = () => {
     authApi.logout();
@@ -31,7 +34,29 @@ const Header = () => {
 
   const handleClubCreateSuccess = (club) => {
     console.log('동호회 생성 완료:', club);
-    navigate(`/club/${club.clubId}`);
+    setCurrentClub(club.clubId, 'LEADER');
+    navigate(`/clubs/${club.clubId}/dashboard`);
+  };
+
+  const handleMyClubClick = async () => {
+    setIsDropdownOpen(false);
+
+    if (!currentClubId) {
+      try {
+        const clubs = await clubApi.getJoinedClubs();
+        if (clubs && clubs.length > 0) {
+          setCurrentClub(clubs[0].clubId, clubs[0].role);
+          navigate(`/clubs/${clubs[0].clubId}/dashboard`);
+        } else {
+          showAlert('가입된 동호회가 없습니다.\n동호회에 먼저 가입해주세요.');
+        }
+      } catch (error) {
+        console.error('동호회 목록 조회 실패:', error);
+        showAlert('동호회 정보를 불러오는데 실패했습니다.');
+      }
+    } else {
+      navigate(`/clubs/${currentClubId}/dashboard`);
+    }
   };
 
   useEffect(() => {
@@ -54,6 +79,13 @@ const Header = () => {
 
   return (
     <>
+      <AlertModal
+        isOpen={alertState.isOpen}
+        onClose={closeAlert}
+        title={alertState.title}
+        message={alertState.message}
+        confirmText={alertState.confirmText}
+      />
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
@@ -111,13 +143,12 @@ const Header = () => {
 
                     {isDropdownOpen && (
                       <div className="absolute right-0 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
-                        <Link
-                          to="/club/dashboard"
-                          onClick={() => setIsDropdownOpen(false)}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                        <button
+                          onClick={handleMyClubClick}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                         >
                           내 동호회
-                        </Link>
+                        </button>
                         <Link
                           to="/mypage/profile"
                           onClick={() => setIsDropdownOpen(false)}

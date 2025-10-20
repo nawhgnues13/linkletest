@@ -9,13 +9,14 @@ SELECT
 	c.name AS name,
 	c.description AS description,
 	cm.status AS status,
-	cm.role AS role
+	cm.role AS role,
+    cm.joined_at AS joinedAt
 FROM CLUB c
 JOIN CLUB_MEMBER cm ON c.club_id = cm.club_id
 WHERE cm.member_id = #{memberId}
 	AND c.is_deleted = 'N'
 	AND cm.is_deleted = 'N'
-	AND cm.status = '승인'
+	AND cm.status = 'APPROVED'
 ORDER BY cm.joined_at DESC
 </select>
 
@@ -25,7 +26,7 @@ SELECT COUNT(*)
 FROM CLUB_MEMBER
 WHERE club_id = #{clubId}
 AND member_id = #{memberId}
-AND status = '승인'
+AND status = 'APPROVED'
 AND is_deleted = 'N'
 
 
@@ -37,7 +38,7 @@ SELECT role
 FROM CLUB_MEMBER
 WHERE club_id = #{clubId}
 AND member_id = #{memberId}
-AND status='승인'
+AND status='APPROVED'
 AND is_deleted='N'
 
 </select>
@@ -90,10 +91,10 @@ AND is_deleted='N'
         ) VALUES (
             #{clubId},
             #{memberId},
-            '리더',
+            'LEADER',
             #{memberId},
             SYSDATE,
-            '승인',
+            'APPROVED',
             SYSDATE,
             'N'
         )

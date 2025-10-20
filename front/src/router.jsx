@@ -105,7 +105,7 @@ const router = createBrowserRouter([
     element: <OAuth2Callback />,
   },
   {
-    path: '/club/dashboard',
+    path: '/clubs/:clubId/dashboard',
     element: (
       <SidebarLayout sidebar={<ClubSideBar />}>
         <DashBoard />

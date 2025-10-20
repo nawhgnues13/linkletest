@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import useUserStore from '../../store/useUserStore';
-import { authApi } from '../../services/api';
+import { authApi, clubApi } from '../../services/api';
 import logo from '../../assets/images/logo.png';
 
 export default function Login() {
@@ -14,7 +14,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { setUser, setLoading, setError } = useUserStore();
+  const { setUser, setCurrentClub, setLoading, setError } = useUserStore();
 
   useEffect(() => {
     const errorMessage = searchParams.get('message');
@@ -74,6 +74,15 @@ export default function Login() {
         name: data.name,
         nickname: data.nickname,
       });
+
+      try {
+        const clubs = await clubApi.getJoinedClubs();
+        if (clubs && clubs.length > 0) {
+          setCurrentClub(clubs[0].clubId, clubs[0].role);
+        }
+      } catch (clubError) {
+        console.error('동호회 목록 조회 실패:', clubError);
+      }
 
       navigate('/');
     } catch (error) {
