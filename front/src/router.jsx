@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { MainLayout, AuthLayout, SidebarLayout } from './components/layout';
+import { MainLayout, AuthLayout, SidebarLayout, ClubSideBar } from './components/layout';
 import MyPageSidebar from './components/layout/MyPageSidebar';
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
@@ -24,6 +24,8 @@ import AccountWithdrawal from './pages/mypage/AccountWithdrawal';
 import NoticeDetail from './pages/notice/NoticeDetail';
 import NoticeWrite from './pages/notice/NoticeWrite';
 import NoticeEdit from './pages/notice/NoticeEdit';
+import DashBoard from './pages/clubdashboard/Dashboard';
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -101,6 +103,14 @@ const router = createBrowserRouter([
   {
     path: '/auth/callback',
     element: <OAuth2Callback />,
+  },
+  {
+    path: '/club/dashboard',
+    element: (
+      <SidebarLayout sidebar={<ClubSideBar />}>
+        <DashBoard />
+      </SidebarLayout>
+    ),
   },
   {
     path: '/auth/verify-email',
