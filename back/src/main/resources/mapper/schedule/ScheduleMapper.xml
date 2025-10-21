@@ -72,6 +72,7 @@
         FROM SCHEDULE
         WHERE SCHEDULE_ID = #{scheduleId}
         AND IS_DELETED = 'N'
+        AND IS_CANCELED = 'N'
     </select>
 
     <!-- 동호회별 일정 목록 조회 -->
@@ -93,6 +94,7 @@
         FROM SCHEDULE s
         WHERE s.CLUB_ID = #{clubId}
         AND s.IS_DELETED = 'N'
+        AND s.IS_CANCELED = 'N'
         ORDER BY s.SCHEDULE_START_DATE DESC
     </select>
 
