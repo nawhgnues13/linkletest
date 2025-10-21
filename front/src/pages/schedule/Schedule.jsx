@@ -4,9 +4,9 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { scheduleApi } from '../../services/api/scheduleApi';
-import ScheduleCreateModal from '../../components/schedule/ScheduleCreateModal';
-import ScheduleDetailModal from '../../components/schedule/ScheduleDetailModal';
-import ScheduleListModal from '../../components/schedule/ScheduleListModal';
+import ScheduleCreateModal from '../schedule/components/ScheduleCreateModal';
+import ScheduleDetailModal from '../schedule/components/ScheduleDetailModal';
+import ScheduleListModal from '../schedule/components/ScheduleListModal';
 
 const Schedule = () => {
   const { clubId } = useParams();
@@ -127,7 +127,6 @@ const Schedule = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
-      {/* 헤더 */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">일정 관리</h1>
         <button
@@ -138,7 +137,6 @@ const Schedule = () => {
         </button>
       </div>
 
-      {/* 캘린더 */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
@@ -157,7 +155,6 @@ const Schedule = () => {
         />
       </div>
 
-      {/* 다가오는 일정 */}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">다가오는 일정</h2>
         {upcomingSchedules.length === 0 ? (
@@ -193,7 +190,6 @@ const Schedule = () => {
         )}
       </div>
 
-      {/* 모달들 */}
       {showCreateModal && (
         <ScheduleCreateModal
           clubId={clubId}
@@ -227,7 +223,6 @@ const Schedule = () => {
 
       {showListModal && selectedDate && (
         <ScheduleListModal
-          clubId={clubId}
           date={selectedDate}
           schedules={schedules.filter((s) => {
             const startDate = new Date(s.scheduleStartDate).toISOString().split('T')[0];
