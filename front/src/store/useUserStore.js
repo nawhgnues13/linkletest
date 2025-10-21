@@ -57,8 +57,9 @@ const useUserStore = create(
       getUserName: () => get().user?.name,
       getCurrentClubId: () => get().currentClubId,
       getCurrentClubRole: () => get().currentClubRole,
-      isClubLeader: () => get().currentClubRole === '리더',
-      isClubManager: () => get().currentClubRole === '리더' || get().currentClubRole === '운영진',
+      isClubLeader: () => get().currentClubRole === 'LEADER',
+      isClubManager: () =>
+        get().currentClubRole === 'LEADER' || get().currentClubRole === 'MANAGER',
     }),
     {
       name: 'user-storage', // 로컬스토리지 키
