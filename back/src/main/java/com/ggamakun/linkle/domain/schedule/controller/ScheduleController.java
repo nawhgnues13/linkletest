@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ggamakun.linkle.domain.schedule.dto.CreateScheduleRequest;
@@ -100,6 +102,26 @@ public class ScheduleController {
     public ResponseEntity<List<ScheduleSummary>> getSchedulesByClubId(@PathVariable("clubId") Integer clubId) {
         List<ScheduleSummary> schedules = scheduleService.getSchedulesByClubId(clubId);
         return ResponseEntity.ok(schedules);
+    }
+    
+    @PutMapping("/{scheduleId}/attendance")
+    @Operation(
+        summary = "참석 상태 변경",
+        description = "일정 참석 상태를 변경합니다. (WAITING/ATTEND/ABSENT)",
+        security = @SecurityRequirement(name = "JWT")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "변경 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+        @ApiResponse(responseCode = "401", description = "인증 실패")
+    })
+    public ResponseEntity<Void> updateAttendanceStatus(
+            @PathVariable("scheduleId") Integer scheduleId,
+            @RequestParam("status") String status,
+            @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Integer memberId = userDetails.getMember().getMemberId();
+        scheduleService.updateAttendanceStatus(scheduleId, memberId, status);
+        return ResponseEntity.ok().build();
     }
 
 }

@@ -20,4 +20,6 @@ public interface IScheduleService {
     // 동호회별 일정 목록 조회
     List<ScheduleSummary> getSchedulesByClubId(Integer clubId);
     
+    // 참석 상태 변경
+    void updateAttendanceStatus(Integer scheduleId, Integer memberId, String status);
 }

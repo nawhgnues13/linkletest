@@ -111,5 +111,56 @@
         AND sa.IS_DELETED = 'N'
         ORDER BY sa.RESPONDED_AT DESC
     </select>
+    
+    <!-- 참석 상태 등록 -->
+    <insert id="insertAttendance" parameterType="com.ggamakun.linkle.domain.schedule.entity.ScheduleAttendance">
+        INSERT INTO SCHEDULE_ATTENDANCE (
+            SCHEDULE_ID,
+            MEMBER_ID,
+            ATTENDANCE_STATUS,
+            RESPONDED_AT,
+            CREATED_BY,
+            CREATED_AT,
+            IS_DELETED
+        ) VALUES (
+            #{scheduleId},
+            #{memberId},
+            #{attendanceStatus},
+            SYSDATE,
+            #{createdBy},
+            SYSDATE,
+            'N'
+        )
+    </insert>
+
+    <!-- 참석 상태 수정 -->
+    <update id="updateAttendance" parameterType="com.ggamakun.linkle.domain.schedule.entity.ScheduleAttendance">
+        UPDATE SCHEDULE_ATTENDANCE
+        SET ATTENDANCE_STATUS = #{attendanceStatus},
+            RESPONDED_AT = SYSDATE,
+            UPDATED_BY = #{updatedBy},
+            UPDATED_AT = SYSDATE
+        WHERE SCHEDULE_ID = #{scheduleId}
+        AND MEMBER_ID = #{memberId}
+        AND IS_DELETED = 'N'
+    </update>
+
+    <!-- 참석 여부 확인 -->
+    <select id="existsAttendance" resultType="int">
+        SELECT COUNT(*)
+        FROM SCHEDULE_ATTENDANCE
+        WHERE SCHEDULE_ID = #{scheduleId}
+        AND MEMBER_ID = #{memberId}
+        AND IS_DELETED = 'N'
+    </select>
+
+    <!-- 참석자 수 조회 -->
+    <select id="countAttendees" resultType="int">
+        SELECT COUNT(*)
+        FROM SCHEDULE_ATTENDANCE
+        WHERE SCHEDULE_ID = #{scheduleId}
+        AND ATTENDANCE_STATUS = 'ATTEND'
+        AND IS_DELETED = 'N'
+    </select>
 
 </mapper>

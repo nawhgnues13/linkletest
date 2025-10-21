@@ -10,6 +10,7 @@ import com.ggamakun.linkle.domain.schedule.dto.CreateScheduleRequest;
 import com.ggamakun.linkle.domain.schedule.dto.ScheduleDetail;
 import com.ggamakun.linkle.domain.schedule.dto.ScheduleSummary;
 import com.ggamakun.linkle.domain.schedule.entity.Schedule;
+import com.ggamakun.linkle.domain.schedule.entity.ScheduleAttendance;
 import com.ggamakun.linkle.domain.schedule.repository.IScheduleRepository;
 import com.ggamakun.linkle.global.exception.BadRequestException;
 import com.ggamakun.linkle.global.exception.UnauthorizedException;
@@ -97,6 +98,56 @@ public class ScheduleService implements IScheduleService {
     public List<ScheduleSummary> getSchedulesByClubId(Integer clubId) {
         log.info("동호회 일정 목록 조회 - Club ID: {}", clubId);
         return scheduleRepository.findByClubId(clubId);
+    }
+    
+    @Override
+    @Transactional
+    public void updateAttendanceStatus(Integer scheduleId, Integer memberId, String status) {
+        log.info("참석 상태 변경 - Schedule ID: {}, Member ID: {}, Status: {}", scheduleId, memberId, status);
+        
+        if (!status.matches("^(WAITING|ATTEND|ABSENT)$")) {
+            throw new BadRequestException("유효하지 않은 참석 상태입니다.");
+        }
+        
+        ScheduleDetail schedule = scheduleRepository.findById(scheduleId);
+        
+        if (schedule == null) {
+            throw new BadRequestException("존재하지 않는 일정입니다.");
+        }
+        
+        if ("Y".equals(schedule.getIsCanceled())) {
+            throw new BadRequestException("취소된 일정입니다.");
+        }
+        
+        if ("ATTEND".equals(status) && schedule.getMaxAttendees() != null) {
+            int currentAttendees = scheduleRepository.countAttendees(scheduleId);
+            if (currentAttendees >= schedule.getMaxAttendees()) {
+                throw new BadRequestException("최대 참석 인원을 초과했습니다.");
+            }
+        }
+        
+        int exists = scheduleRepository.existsAttendance(scheduleId, memberId);
+        
+        ScheduleAttendance attendance = ScheduleAttendance.builder()
+                .scheduleId(scheduleId)
+                .memberId(memberId)
+                .attendanceStatus(status)
+                .createdBy(memberId)
+                .updatedBy(memberId)
+                .build();
+        
+        int result;
+        if (exists > 0) {
+            result = scheduleRepository.updateAttendance(attendance);
+        } else {
+            result = scheduleRepository.insertAttendance(attendance);
+        }
+        
+        if (result <= 0) {
+            throw new BadRequestException("참석 상태 변경에 실패했습니다.");
+        }
+        
+        log.info("참석 상태 변경 완료 - Schedule ID: {}, Member ID: {}", scheduleId, memberId);
     }
 
 }
