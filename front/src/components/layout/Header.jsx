@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import useUserStore from '../../store/useUserStore';
-import { authApi } from '../../services/api';
+import { authApi, fileApi } from '../../services/api';
 import logo from '../../assets/images/logo.png';
 import defaultProfile from '../../assets/images/default-profile.png';
 import NotificationDropdown from '../layout/NotificationDropdown';
@@ -11,11 +11,45 @@ import { useAlert } from '../../hooks/useAlert';
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, clearUser, currentClubId, setCurrentClub } = useUserStore();
+  const { user, setUser, isAuthenticated, clearUser, currentClubId, setCurrentClub } =
+    useUserStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isClubModalOpen, setIsClubModalOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState(defaultProfile);
   const dropdownRef = useRef(null);
   const { alertState, showAlert, closeAlert } = useAlert();
+
+  //프로필 이미지 로드
+  useEffect(() => {
+    const loadProfileImage = async () => {
+      if (user?.profileImageUrl) {
+        setProfileImage(user.profileImageUrl);
+      } else if (user?.fileId) {
+        try {
+          const fileData = await fileApi.getFile(user.fileId);
+          const imageUrl = fileData.fileLink || defaultProfile;
+          setProfileImage(imageUrl);
+
+          // Store에 URL 저장
+          setUser({
+            ...user,
+            profileImageUrl: imageUrl,
+          });
+        } catch (error) {
+          console.error('프로필 이미지 조회 실패:', error);
+          setProfileImage(defaultProfile);
+        }
+      } else {
+        setProfileImage(defaultProfile);
+      }
+    };
+
+    if (isAuthenticated && user) {
+      loadProfileImage();
+    } else {
+      setProfileImage(defaultProfile);
+    }
+  }, [user?.fileId, user?.profileImageUrl, isAuthenticated]);
 
   const handleLogout = () => {
     authApi.logout();
@@ -64,7 +98,7 @@ const Header = () => {
     };
   }, [isDropdownOpen]);
 
-  const profileImage = user?.profileImageUrl || defaultProfile;
+  // const profileImage = user?.profileImageUrl || defaultProfile;
 
   return (
     <>

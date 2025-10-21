@@ -12,4 +12,5 @@ public class ClubSummary {
 	private String status;
 	private String role;
 	private Timestamp joinedAt;
+	private String fileLink;
 }

@@ -14,7 +14,7 @@ const ScheduleListModal = ({ date, schedules, onClose, onScheduleClick, onCreate
     const date = new Date(dateString);
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `오후 ${hours}:${minutes}`;
+    return `${hours}:${minutes}`;
   };
 
   return (

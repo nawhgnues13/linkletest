@@ -32,6 +32,8 @@ import MyPageProfile from './pages/mypage/MyPageProfile';
 import ProfileEdit from './pages/mypage/ProfileEdit';
 import ChangePassword from './pages/mypage/ChangePassword';
 import AccountWithdrawal from './pages/mypage/AccountWithdrawal';
+import Gallery from './pages/gallery/Gallery';
+import ClubDetail from './pages/club/ClubDetail';
 
 const router = createBrowserRouter([
   {
@@ -163,6 +165,14 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/gallery',
+    element: (
+      <MainLayout>
+        <Gallery />
+      </MainLayout>
+    ),
+  },
+  {
     path: '/notice',
     element: (
       <SidebarLayout sidebar={<MyPageSidebar />}>
@@ -200,6 +210,14 @@ const router = createBrowserRouter([
       <SidebarLayout sidebar={<MyPageSidebar />}>
         <AccountWithdrawal />
       </SidebarLayout>
+    ),
+  },
+  {
+    path: '/clubs/:clubId',
+    element: (
+      <MainLayout>
+        <ClubDetail />
+      </MainLayout>
     ),
   },
   {

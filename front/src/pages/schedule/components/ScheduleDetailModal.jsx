@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { scheduleApi } from '../../../services/api/scheduleApi';
 import ScheduleCancelModal from './ScheduleCancelModal';
 import AttendeeDetailModal from './AttendeeDetailModal';
@@ -8,10 +8,6 @@ const ScheduleDetailModal = ({ schedule, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(true);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showAttendeeModal, setShowAttendeeModal] = useState(false);
-
-  useEffect(() => {
-    fetchDetail();
-  }, [schedule.scheduleId, fetchDetail]);
 
   const fetchDetail = useCallback(async () => {
     try {
@@ -24,6 +20,10 @@ const ScheduleDetailModal = ({ schedule, onClose, onSuccess }) => {
       setLoading(false);
     }
   }, [schedule.scheduleId]);
+
+  useEffect(() => {
+    fetchDetail();
+  }, [schedule.scheduleId, fetchDetail]);
 
   const handleAttendanceChange = async (status) => {
     try {
@@ -48,7 +48,7 @@ const ScheduleDetailModal = ({ schedule, onClose, onSuccess }) => {
     const date = new Date(dateString);
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `오후 ${hours}:${minutes}`;
+    return `${hours}:${minutes}`;
   };
 
   const getAttendeesByStatus = (status) => {

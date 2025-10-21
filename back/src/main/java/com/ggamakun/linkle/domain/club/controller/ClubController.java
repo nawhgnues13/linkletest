@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ggamakun.linkle.domain.club.dto.ClubDetailDto;
 import com.ggamakun.linkle.domain.club.dto.ClubSummary;
 import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
 import com.ggamakun.linkle.domain.club.entity.Club;
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Tag(name = "동호회", description = "동호회 관련 API")
 public class ClubController {
+	
 	private final IClubService clubService;
 
 	@GetMapping("/clubs/joined")
@@ -82,4 +84,20 @@ public class ClubController {
 		int count = clubService.getApprovedMemberCount(clubId);
 		return ResponseEntity.ok(count);
 	}
+	
+	@GetMapping("/clubs/{clubId}")
+	@Operation(
+			summary = "동호회 상세 정보 조회",
+			description = "특정 동호회의 상세 정보를 조회합니다.",
+			security = @SecurityRequirement(name = "JWT")
+			)
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "조회 성공"),
+			@ApiResponse(responseCode = "404", description = "동호회를 찾을 수 없음")
+	})
+	public ResponseEntity<ClubDetailDto> getClubDetail(@PathVariable("clubId") Integer clubId) {
+		ClubDetailDto club = clubService.getClubDetail(clubId);
+		return ResponseEntity.ok(club);
+	}
 }
+
