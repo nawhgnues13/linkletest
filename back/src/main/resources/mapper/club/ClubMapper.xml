@@ -123,5 +123,13 @@ AND is_deleted='N'
           AND is_deleted = 'N'
     </select>
 
+	<!-- 동호회 승인된 회원 수 조회 -->
+	<select id="getApprovedMemberCount" resultType="int">
+		SELECT COUNT(*)
+		FROM CLUB_MEMBER
+		WHERE club_id = #{clubId}
+		AND status = 'APPROVED'
+		AND is_deleted = 'N'
+	</select>
 
 </mapper>

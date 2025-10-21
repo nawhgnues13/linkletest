@@ -29,4 +29,7 @@ public interface IClubRepository {
 
 	// 동호회 조회
 	Club findById(Integer clubId);
+	
+	// 동호회 승인된 회원 수 조회
+	int getApprovedMemberCount(@Param("clubId") Integer clubId);
 }

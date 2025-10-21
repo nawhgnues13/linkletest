@@ -20,7 +20,7 @@ public interface IScheduleRepository {
     // 일정 취소
     int cancelSchedule(@Param("scheduleId") Integer scheduleId, @Param("canceledBy") Integer canceledBy);
     
- // 일정 상세 조회
+    // 일정 상세 조회
     ScheduleDetail findById(Integer scheduleId);
     
     // 동호회별 일정 목록 조회
