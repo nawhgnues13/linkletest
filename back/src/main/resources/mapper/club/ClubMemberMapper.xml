@@ -11,8 +11,7 @@
             f.file_link AS fileLink,
             cm.role AS role,
             cm.status AS status,
-            cm.joined_at AS joinedAt,
-            cm.rejection_reason AS rejectionReason
+            cm.joined_at AS joinedAt
         FROM CLUB_MEMBER cm
         JOIN MEMBER m ON cm.member_id = m.member_id
         LEFT JOIN FILE_STORAGE f ON m.file_id = f.file_id AND f.is_deleted = 'N'

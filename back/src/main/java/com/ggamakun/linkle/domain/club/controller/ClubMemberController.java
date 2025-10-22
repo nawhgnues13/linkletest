@@ -45,7 +45,7 @@ public class ClubMemberController {
         @ApiResponse(responseCode = "403", description = "권한 없음")
     })
     public ResponseEntity<List<ClubMemberDto>> getClubMembers(
-            @PathVariable Integer clubId,
+            @PathVariable("clubId") Integer clubId,
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails) {
         
         Integer currentMemberId = userDetails.getMember().getMemberId();
@@ -64,7 +64,7 @@ public class ClubMemberController {
         @ApiResponse(responseCode = "403", description = "권한 없음")
     })
     public ResponseEntity<List<ClubMemberDto>> getWaitingMembers(
-            @PathVariable Integer clubId,
+            @PathVariable("clubId") Integer clubId,
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails) {
         
         Integer currentMemberId = userDetails.getMember().getMemberId();
@@ -84,7 +84,7 @@ public class ClubMemberController {
         @ApiResponse(responseCode = "403", description = "권한 없음")
     })
     public ResponseEntity<Void> updateMemberRole(
-            @PathVariable Integer clubId,
+            @PathVariable("clubId") Integer clubId,
             @Valid @RequestBody UpdateMemberRoleRequest request,
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails) {
         
@@ -105,7 +105,7 @@ public class ClubMemberController {
         @ApiResponse(responseCode = "403", description = "권한 없음")
     })
     public ResponseEntity<Void> removeMember(
-            @PathVariable Integer clubId,
+            @PathVariable("clubId") Integer clubId,
             @Valid @RequestBody RemoveMemberRequest request,
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails) {
         
@@ -127,7 +127,7 @@ public class ClubMemberController {
         @ApiResponse(responseCode = "403", description = "권한 없음")
     })
     public ResponseEntity<Void> approveMember(
-            @PathVariable Integer clubId,
+            @PathVariable("clubId") Integer clubId,
             @Valid @RequestBody ApproveRejectRequest request,
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails) {
         
@@ -148,7 +148,7 @@ public class ClubMemberController {
         @ApiResponse(responseCode = "403", description = "권한 없음")
     })
     public ResponseEntity<Void> rejectMember(
-            @PathVariable Integer clubId,
+            @PathVariable("clubId") Integer clubId,
             @Valid @RequestBody ApproveRejectRequest request,
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails) {
         
