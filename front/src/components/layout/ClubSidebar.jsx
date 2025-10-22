@@ -53,7 +53,7 @@ const ClubSidebar = () => {
     { label: '공지사항', path: `/clubs/${clubId}/notice` },
     { label: '일정', path: `/clubs/${clubId}/schedule` },
     { label: '멤버', path: `/clubs/${clubId}/members` },
-    { label: '채팅', path: `/clubs/${clubId}/chat` },
+    // { label: '채팅', path: `/clubs/${clubId}/chat` },
   ];
 
   const isActive = (path) => location.pathname.startsWith(path);
