@@ -1,4 +1,4 @@
-import { get } from '../apiClient';
+import { get, put, del } from '../apiClient';
 
 export const clubApi = {
   // 내가 가입한 동호회 목록 조회

@@ -144,6 +144,8 @@
 		c.description AS description,
 		c.category_id AS categoryId,
 		cat.name AS categoryName,
+		c.region AS region,
+        c.max_members AS maxMembers,
 		TO_CHAR(c.opened_at, 'YYYY-MM-DD HH24:MI:SS') AS openedAt
 		FROM CLUB c
 		LEFT JOIN FILE_STORAGE f on c.file_id = f.file_id
