@@ -5,15 +5,18 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ggamakun.linkle.domain.club.dto.ClubDetailDto;
 import com.ggamakun.linkle.domain.club.dto.ClubSummary;
 import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
+import com.ggamakun.linkle.domain.club.dto.UpdateClubRequestDto;
 import com.ggamakun.linkle.domain.club.entity.Club;
 import com.ggamakun.linkle.domain.club.service.IClubService;
 import com.ggamakun.linkle.global.security.CustomUserDetails;
@@ -98,6 +101,49 @@ public class ClubController {
 	public ResponseEntity<ClubDetailDto> getClubDetail(@PathVariable("clubId") Integer clubId) {
 		ClubDetailDto club = clubService.getClubDetail(clubId);
 		return ResponseEntity.ok(club);
+	}
+	
+	@PutMapping("/clubs/{clubId}")
+	@Operation(
+			summary = "동호회 정보 수정",
+			description = "동호회 정보를 수정합니다. 동호회장만 가능합니다.",
+			security = @SecurityRequirement(name = "JWT")
+			)
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "수정 성공"),
+			@ApiResponse(responseCode = "400", description = "잘못된 요청"),
+			@ApiResponse(responseCode = "403", description = "권한 없음 - 동호회장만 가능"),
+			@ApiResponse(responseCode = "404", description = "동호회를 찾을 수 없음")
+	})
+	public ResponseEntity<Void> updateClub(
+			@PathVariable("clubId") Integer clubId,
+			@Valid @RequestBody UpdateClubRequestDto request,
+			@Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails
+			) {
+		Integer memberId = userDetails.getMember().getMemberId();
+		clubService.updateClub(clubId, request, memberId);
+		return ResponseEntity.ok().build();
+	}
+	
+	@DeleteMapping("/clubs/{clubId}")
+	@Operation(
+			summary = "동호회 삭제",
+			description = "동호회를 삭제합니다. 동호회장만 가능하며, 가입한 회원이 없어야 합니다.",
+			security = @SecurityRequirement(name = "JWT")
+			)
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "삭제 성공"),
+			@ApiResponse(responseCode = "400", description = "잘못된 요청 - 가입한 회원이 있음"),
+			@ApiResponse(responseCode = "403", description = "권한 없음 - 동호회장만 가능"),
+			@ApiResponse(responseCode = "404", description = "동호회를 찾을 수 없음")
+	})
+	public ResponseEntity<Void> deleteClub(
+			@PathVariable("clubId") Integer clubId,
+			@Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails
+			) {
+		Integer memberId = userDetails.getMember().getMemberId();
+		clubService.deleteClub(clubId, memberId);
+		return ResponseEntity.ok().build();
 	}
 }
 

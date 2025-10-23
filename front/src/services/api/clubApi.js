@@ -16,4 +16,14 @@ export const clubApi = {
   getClubDetail: async (clubId) => {
     return await get(`/clubs/${clubId}`);
   },
+
+  // 동호회 수정
+  updateClub: async (clubId, data) => {
+    return await put(`/clubs/${clubId}`, data);
+  },
+
+  // 동호회 삭제
+  deleteClub: async (clubId) => {
+    return await del(`/clubs/${clubId}`);
+  },
 };

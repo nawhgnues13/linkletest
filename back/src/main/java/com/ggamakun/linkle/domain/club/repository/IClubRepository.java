@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.ggamakun.linkle.domain.club.dto.ClubDetailDto;
 import com.ggamakun.linkle.domain.club.dto.ClubSummary;
 import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
+import com.ggamakun.linkle.domain.club.dto.UpdateClubRequestDto;
 import com.ggamakun.linkle.domain.club.entity.Club;
 
 @Mapper
@@ -36,4 +37,10 @@ public interface IClubRepository {
 
 	//동호회 상세 조회
 	ClubDetailDto findDetailById(@Param("clubId") Integer clubId);
+	
+	// 동호회 수정
+	int updateClub(@Param("clubId") Integer clubId, @Param("request") UpdateClubRequestDto request);
+
+	// 동호회 삭제 (소프트 삭제)
+	int deleteClub(@Param("clubId") Integer clubId, @Param("memberId") Integer memberId);
 }

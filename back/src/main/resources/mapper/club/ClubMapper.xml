@@ -152,4 +152,31 @@
 		WHERE c.club_id = #{clubId}
 		AND c.is_deleted = 'N'
 	</select>
+	
+	<!-- 동호회 수정 -->
+    <update id="updateClub">
+        UPDATE CLUB
+        SET name = #{request.name},
+            category_id = #{request.categoryId},
+            region = #{request.sido} || ' ' || #{request.sigungu},
+            description = #{request.description},
+            max_members = #{request.maxMembers},
+            file_id = #{request.fileId},
+            updated_by = #{request.updatedBy},
+            updated_at = SYSDATE
+        WHERE club_id = #{clubId}
+            AND is_deleted = 'N'
+    </update>
+
+    <!-- 동호회 삭제 -->
+    <update id="deleteClub">
+        UPDATE CLUB
+        SET is_deleted = 'Y',
+            closed_at = SYSDATE,
+            updated_by = #{memberId},
+            updated_at = SYSDATE
+        WHERE club_id = #{clubId}
+            AND is_deleted = 'N'
+    </update>
+	
 </mapper>
