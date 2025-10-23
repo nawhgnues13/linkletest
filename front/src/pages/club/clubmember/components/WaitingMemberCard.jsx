@@ -23,7 +23,7 @@ export default function WaitingMemberCard({ member, onApprove, onReject }) {
         <img
           src={getProfileSrc(member.fileLink)}
           alt="프로필"
-          className="w-12 h-12 rounded-full mr-3 bg-gray-200"
+          className="w-12 h-12 rounded-full overflow-hidden mr-3 transition-opacity translate-y-1"
         />
         <div>
           <p className="font-semibold">{member.nickname}</p>
