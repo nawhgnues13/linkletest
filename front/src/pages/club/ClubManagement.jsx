@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { clubApi, categoryApi, fileApi } from '../../services/api';
 import AlertModal from '../../components/common/AlertModal';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 export default function ClubManagement() {
   const { clubId } = useParams();
@@ -21,6 +22,7 @@ export default function ClubManagement() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const fetchClubData = useCallback(async () => {
     try {
@@ -153,8 +155,6 @@ export default function ClubManagement() {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('동호회를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.')) return;
-
     try {
       await clubApi.deleteClub(clubId);
       navigate('/');
@@ -178,7 +178,7 @@ export default function ClubManagement() {
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold text-gray-900">동호회 관리</h1>
           <button
-            onClick={handleDelete}
+            onClick={() => setShowDeleteModal(true)}
             className="text-sm font-medium text-red-500 hover:text-red-600"
           >
             동호회 삭제
@@ -338,11 +338,23 @@ export default function ClubManagement() {
           </div>
         </div>
       </div>
+
       <AlertModal
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
         title="수정 완료"
         message="동호회 정보가 성공적으로 수정되었습니다."
+      />
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="동호회 삭제"
+        message="동호회를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다."
+        confirmText="삭제"
+        cancelText="취소"
+        confirmButtonStyle="danger"
       />
     </>
   );
