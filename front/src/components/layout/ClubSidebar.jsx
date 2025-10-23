@@ -13,17 +13,26 @@ const ClubSidebar = () => {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
 
+  const fetchClubs = async () => {
+    try {
+      const data = await clubApi.getJoinedClubs();
+      setClubs(data || []);
+    } catch (error) {
+      console.error('동호회 목록 조회 실패:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchClubs = async () => {
-      try {
-        const data = await clubApi.getJoinedClubs();
-        setClubs(data || []);
-      } catch (error) {
-        console.error('동호회 목록 조회 실패:', error);
-      }
+    fetchClubs();
+  }, []);
+
+  useEffect(() => {
+    const handleClubUpdate = () => {
+      fetchClubs();
     };
 
-    fetchClubs();
+    window.addEventListener('clubUpdated', handleClubUpdate);
+    return () => window.removeEventListener('clubUpdated', handleClubUpdate);
   }, []);
 
   useEffect(() => {

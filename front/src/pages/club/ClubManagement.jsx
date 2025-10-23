@@ -476,6 +476,7 @@ export default function ClubManagement() {
 
     try {
       await clubApi.updateClub(clubId, formData);
+      window.dispatchEvent(new CustomEvent('clubUpdated'));
       navigate(`/clubs/${clubId}/dashboard`);
     } catch (error) {
       console.error('동호회 수정 실패:', error);
