@@ -56,6 +56,10 @@ const ClubSidebar = () => {
     // { label: '채팅', path: `/clubs/${clubId}/chat` },
   ];
 
+  const leaderMenuItems = [{ label: '동호회 관리', path: `/clubs/${clubId}/manage` }];
+
+  const isLeader = currentClub?.role === 'LEADER';
+
   const isActive = (path) => location.pathname.startsWith(path);
 
   return (
@@ -119,6 +123,28 @@ const ClubSidebar = () => {
               {item.label}
             </Link>
           ))}
+
+          {isLeader && (
+            <>
+              <div className="my-4 border-t border-gray-200"></div>
+              {leaderMenuItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`
+                    block px-4 py-3 mb-1 rounded-lg text-sm font-medium transition-all
+                    ${
+                      isActive(item.path)
+                        ? 'bg-primary text-white shadow-sm'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }
+                  `}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </>
+          )}
         </nav>
       </div>
     </aside>

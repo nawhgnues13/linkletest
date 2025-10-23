@@ -29,6 +29,7 @@ import Notice from './pages/notice/Notice';
 import NoticeDetail from './pages/notice/NoticeDetail';
 import NoticeWrite from './pages/notice/NoticeWrite';
 import NoticeEdit from './pages/notice/NoticeEdit';
+import ClubManagement from './pages/club/ClubManagement';
 import MyPageProfile from './pages/mypage/MyPageProfile';
 import ProfileEdit from './pages/mypage/ProfileEdit';
 import ChangePassword from './pages/mypage/ChangePassword';
@@ -138,6 +139,14 @@ const router = createBrowserRouter([
     element: (
       <SidebarLayout sidebar={<ClubSideBar />}>
         <ClubMembers />
+      </SidebarLayout>
+    ),
+  },
+  {
+    path: 'clubs/:clubId/manage',
+    element: (
+      <SidebarLayout sidebar={<ClubSideBar />}>
+        <ClubManagement />
       </SidebarLayout>
     ),
   },
