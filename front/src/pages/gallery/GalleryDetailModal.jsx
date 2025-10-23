@@ -96,25 +96,25 @@ export default function GalleryDetailModal({ gallery, onClose, onDelete }) {
 
   // 작성자 본인이거나 운영진/모임장인 경우 삭제 가능
   const isAuthor = isLoggedIn && user?.memberId === gallery.createdBy;
-  const isManager = userRole === '모임장' || userRole === '운영진';
+  const isManager = userRole === 'LEADER' || userRole === 'MANAGER';
   const canDelete = isAuthor || isManager;
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/80 bg-opacity-50 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-none w-full max-w-lg overflow-hidden"
+        className="bg-white rounded-none w-full max-w-3xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 이미지 영역 */}
-        <div className="bg-gray-200 flex items-center justify-center" style={{ height: '400px' }}>
+        <div className="bg-gray-200 flex items-center justify-center" style={{ height: '520px' }}>
           {gallery.fileLink ? (
             <img
               src={gallery.fileLink}
               alt={gallery.clubName}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
@@ -140,7 +140,7 @@ export default function GalleryDetailModal({ gallery, onClose, onDelete }) {
           {/* 동호회 정보 & 좋아요 & 메뉴 */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="w-11 h-11 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="relative w-11 h-11 rounded-full overflow-hidden bg-white ring-1 ring-transparent flex-shrink-0">
                 <img
                   src={gallery.clubProfileImage || defaultProfile}
                   alt={gallery.clubName}
@@ -231,7 +231,7 @@ export default function GalleryDetailModal({ gallery, onClose, onDelete }) {
 
           {/* 작성자 & 날짜 정보 */}
           <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-            <div className="w-5 h-5 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+            <div className="relative w-11 h-11 rounded-full overflow-hidden bg-white ring-1 ring-transparent flex-shrink-0">
               <img
                 src={gallery.memberProfileImage || defaultProfile}
                 alt={gallery.nickname}

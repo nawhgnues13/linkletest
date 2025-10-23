@@ -1,16 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { clubApi } from '../../services/api/clubApi';
 import { galleryApi } from '../../services/api/galleryApi';
-import useUserStore from '../../store/useUserStore';
+
 import defaultProfile from '../../assets/images/default-profile.png';
 import GalleryUploadModal from '../gallery/GalleryUploadModal';
 import GalleryDetailModal from '../gallery/GalleryDetailModal';
 
 export default function ClubDetail() {
   const { clubId } = useParams();
-  const navigate = useNavigate();
-  const { user } = useUserStore();
 
   const [club, setClub] = useState(null);
   const [galleries, setGalleries] = useState([]);
@@ -60,7 +58,7 @@ export default function ClubDetail() {
     }
   };
 
-  const isManager = userRole === '모임장' || userRole === '운영진';
+  const isManager = userRole === 'LEADER' || userRole === 'MANAGER';
 
   const handleDeleteGallery = async (galleryId) => {
     if (!window.confirm('이 사진을 삭제하시겠습니까?')) return;
@@ -80,9 +78,19 @@ export default function ClubDetail() {
     await fetchClubData();
   };
 
-  const handleImageClick = (gallery) => {
-    setSelectedGallery(gallery);
-    setIsDetailModalOpen(true);
+  const handleImageClick = async (g) => {
+    try {
+      const detail = await galleryApi.getGallery(g.galleryId);
+      setSelectedGallery({
+        ...g,
+        ...detail,
+        clubName: club.clubName,
+        clubProfileImage: club.fileLink,
+      });
+      setIsDetailModalOpen(true);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleDetailModalClose = () => {
@@ -131,7 +139,7 @@ export default function ClubDetail() {
           )}
 
           <div className="flex items-start justify-center gap-8">
-            <div className="w-36 h-36 rounded-full overflow-hidden bg-gray-200 flex-shrink-0 ring-1 ring-gray-200">
+            <div className="w-36 h-36 rounded-full overflow-hidden bg-white flex-shrink-0 ring-1 ring-transparent">
               <img
                 src={getProfileSrc(club.fileLink)}
                 alt={club.clubName}

@@ -18,11 +18,7 @@ import com.ggamakun.linkle.domain.club.dto.UpdateMemberRoleRequest;
 import com.ggamakun.linkle.domain.club.service.IClubMemberService;
 import com.ggamakun.linkle.global.security.CustomUserDetails;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,15 +31,6 @@ public class ClubMemberController {
     private final IClubMemberService clubMemberService;
 
     @GetMapping("/clubs/{clubId}/members")
-    @Operation(
-        summary = "동호회 회원 목록 조회",
-        description = "동호회에 가입된 회원 목록을 조회합니다. 권한별로 정렬됩니다.",
-        security = @SecurityRequirement(name = "JWT")
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "조회 성공"),
-        @ApiResponse(responseCode = "403", description = "권한 없음")
-    })
     public ResponseEntity<List<ClubMemberDto>> getClubMembers(
             @PathVariable("clubId") Integer clubId,
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -54,15 +41,6 @@ public class ClubMemberController {
     }
 
     @GetMapping("/clubs/{clubId}/members/waiting")
-    @Operation(
-        summary = "가입 신청 대기 목록 조회",
-        description = "동호회 가입 신청 대기 중인 회원 목록을 조회합니다. 운영진 이상만 조회 가능합니다.",
-        security = @SecurityRequirement(name = "JWT")
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "조회 성공"),
-        @ApiResponse(responseCode = "403", description = "권한 없음")
-    })
     public ResponseEntity<List<ClubMemberDto>> getWaitingMembers(
             @PathVariable("clubId") Integer clubId,
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -73,16 +51,6 @@ public class ClubMemberController {
     }
 
     @PutMapping("/clubs/{clubId}/members/role")
-    @Operation(
-        summary = "회원 권한 변경",
-        description = "동호회 회원의 권한을 변경합니다. 운영진 이상만 가능합니다.",
-        security = @SecurityRequirement(name = "JWT")
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "권한 변경 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-        @ApiResponse(responseCode = "403", description = "권한 없음")
-    })
     public ResponseEntity<Void> updateMemberRole(
             @PathVariable("clubId") Integer clubId,
             @Valid @RequestBody UpdateMemberRoleRequest request,
@@ -94,16 +62,6 @@ public class ClubMemberController {
     }
 
     @PutMapping("/clubs/{clubId}/members/remove")
-    @Operation(
-        summary = "회원 강제 탈퇴",
-        description = "동호회 회원을 강제로 탈퇴시킵니다. 운영진 이상만 가능합니다.",
-        security = @SecurityRequirement(name = "JWT")
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "강제 탈퇴 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-        @ApiResponse(responseCode = "403", description = "권한 없음")
-    })
     public ResponseEntity<Void> removeMember(
             @PathVariable("clubId") Integer clubId,
             @Valid @RequestBody RemoveMemberRequest request,
@@ -116,16 +74,6 @@ public class ClubMemberController {
     }
 
     @PostMapping("/clubs/{clubId}/members/approve")
-    @Operation(
-        summary = "가입 신청 승인",
-        description = "동호회 가입 신청을 승인합니다. 운영진 이상만 가능합니다.",
-        security = @SecurityRequirement(name = "JWT")
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "승인 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-        @ApiResponse(responseCode = "403", description = "권한 없음")
-    })
     public ResponseEntity<Void> approveMember(
             @PathVariable("clubId") Integer clubId,
             @Valid @RequestBody ApproveRejectRequest request,
@@ -137,16 +85,6 @@ public class ClubMemberController {
     }
 
     @PostMapping("/clubs/{clubId}/members/reject")
-    @Operation(
-        summary = "가입 신청 거절",
-        description = "동호회 가입 신청을 거절합니다. 운영진 이상만 가능합니다.",
-        security = @SecurityRequirement(name = "JWT")
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "거절 성공"),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-        @ApiResponse(responseCode = "403", description = "권한 없음")
-    })
     public ResponseEntity<Void> rejectMember(
             @PathVariable("clubId") Integer clubId,
             @Valid @RequestBody ApproveRejectRequest request,

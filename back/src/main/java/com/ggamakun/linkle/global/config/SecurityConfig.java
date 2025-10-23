@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**").permitAll()
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/member/activities/**").authenticated()
                 .requestMatchers("/member/**").permitAll()
                 .requestMatchers("/categories/**").permitAll()
                 .requestMatchers("/file/**").permitAll()
@@ -63,7 +64,9 @@ public class SecurityConfig {
                 .requestMatchers("/notices/**").permitAll()
                 .requestMatchers("/gallery/**").permitAll()
                 .requestMatchers("/notifications/**").permitAll()
-                .requestMatchers("GET","/clubs/*").permitAll()
+                .requestMatchers("GET", "/clubs/joined").authenticated()
+                .requestMatchers("GET","/clubs/**").permitAll()
+                .requestMatchers("GET", "/schedules/**").permitAll()
                 .anyRequest().authenticated()
                 
             )
