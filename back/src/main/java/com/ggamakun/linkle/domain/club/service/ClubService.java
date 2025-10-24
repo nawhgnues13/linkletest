@@ -126,12 +126,6 @@ public class ClubService implements IClubService{
 		log.info("동호회 삭제 완료 - 동호회 ID: {}", clubId);
 	}
 
-
-	@Override
-	public List<ClubMemberDto> getClubMembers(Integer clubId) {
-		return clubRepository.findMembersByClubId(clubId);
-	}
-	
 	@Override
 	public List<MonthlyAttendanceDto> getMonthlyAttendance(Integer clubId) {
 		log.info("동호회 월별 참여율 조회 - 동호회 ID: {}", clubId);

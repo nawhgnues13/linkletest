@@ -32,9 +32,6 @@ public interface IClubService {
 	// 동호회 삭제
 	void deleteClub(Integer clubId, Integer memberId);
 	
-	//동호회 회원 목록 조회
-	List<ClubMemberDto> getClubMembers(Integer clubId);
-	
 	// 대시보드 통계 조회
 	List<MonthlyAttendanceDto> getMonthlyAttendance(Integer clubId);
 	List<AgeDistributionDto> getAgeDistribution(Integer clubId);

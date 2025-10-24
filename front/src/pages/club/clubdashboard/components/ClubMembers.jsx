@@ -22,16 +22,6 @@ const ClubMembers = ({ clubId }) => {
     fetchData();
   }, [clubId]);
 
-  const getRoleBadge = (role) => {
-    if (role === 'LEADER') {
-      return <span className="text-xs text-yellow-600">모임장</span>;
-    }
-    if (role === 'MANAGER') {
-      return <span className="text-xs text-blue-600">운영진</span>;
-    }
-    return null;
-  };
-
   const handleViewAll = () => {
     navigate(`/clubs/${clubId}/members`);
   };
@@ -52,13 +42,13 @@ const ClubMembers = ({ clubId }) => {
           전체 보기
         </button>
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         {members.length === 0 ? (
-          <div className="col-span-3 text-center py-8 text-gray-500">회원이 없습니다</div>
+          <div className="col-span-2 text-center py-8 text-gray-500">회원이 없습니다</div>
         ) : (
           members.map((member) => (
-            <div key={member.memberId} className="flex flex-col items-center gap-2">
-              <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden">
+            <div key={member.memberId} className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden flex-shrink-0 ml-3">
                 {member.fileLink ? (
                   <img
                     src={member.fileLink}
@@ -66,15 +56,12 @@ const ClubMembers = ({ clubId }) => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-300 text-gray-600 text-xl font-bold">
+                  <span className="text-lg text-white font-medium">
                     {member.nickname?.[0] || '?'}
-                  </div>
+                  </span>
                 )}
               </div>
-              <div className="text-center">
-                <p className="text-sm font-medium text-gray-900">{member.nickname}</p>
-                {getRoleBadge(member.role)}
-              </div>
+              <p className="text-sm font-medium text-gray-900 ml-5">{member.nickname}</p>
             </div>
           ))
         )}
