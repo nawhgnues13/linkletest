@@ -36,4 +36,21 @@ export const clubApi = {
   getClubMembers: async (clubId) => {
     return await get(`/clubs/${clubId}/members`);
   },
+
+  // 대시보드 통계 조회
+  getMonthlyAttendance: async (clubId) => {
+    return await get(`/clubs/${clubId}/dashboard/attendance`);
+  },
+
+  getAgeDistribution: async (clubId) => {
+    return await get(`/clubs/${clubId}/dashboard/age`);
+  },
+
+  getGenderRatio: async (clubId) => {
+    return await get(`/clubs/${clubId}/dashboard/gender`);
+  },
+
+  getQuarterlyJoinStats: async (clubId) => {
+    return await get(`/clubs/${clubId}/dashboard/quarterly-join`);
+  },
 };

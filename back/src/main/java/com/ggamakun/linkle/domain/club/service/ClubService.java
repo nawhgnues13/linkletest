@@ -5,10 +5,14 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ggamakun.linkle.domain.club.dto.AgeDistributionDto;
 import com.ggamakun.linkle.domain.club.dto.ClubDetailDto;
 import com.ggamakun.linkle.domain.club.dto.ClubMemberDto;
 import com.ggamakun.linkle.domain.club.dto.ClubSummary;
 import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
+import com.ggamakun.linkle.domain.club.dto.GenderRatioDto;
+import com.ggamakun.linkle.domain.club.dto.MonthlyAttendanceDto;
+import com.ggamakun.linkle.domain.club.dto.QuarterlyJoinDto;
 import com.ggamakun.linkle.domain.club.dto.UpdateClubRequestDto;
 import com.ggamakun.linkle.domain.club.entity.Club;
 import com.ggamakun.linkle.domain.club.repository.IClubRepository;
@@ -126,6 +130,30 @@ public class ClubService implements IClubService{
 	@Override
 	public List<ClubMemberDto> getClubMembers(Integer clubId) {
 		return clubRepository.findMembersByClubId(clubId);
+	}
+	
+	@Override
+	public List<MonthlyAttendanceDto> getMonthlyAttendance(Integer clubId) {
+		log.info("동호회 월별 참여율 조회 - 동호회 ID: {}", clubId);
+		return clubRepository.getMonthlyAttendance(clubId);
+	}
+	
+	@Override
+	public List<AgeDistributionDto> getAgeDistribution(Integer clubId) {
+		log.info("동호회 나이대 분포 조회 - 동호회 ID: {}", clubId);
+		return clubRepository.getAgeDistribution(clubId);
+	}
+	
+	@Override
+	public GenderRatioDto getGenderRatio(Integer clubId) {
+		log.info("동호회 성비 조회 - 동호회 ID: {}", clubId);
+		return clubRepository.getGenderRatio(clubId);
+	}
+	
+	@Override
+	public List<QuarterlyJoinDto> getQuarterlyJoinStats(Integer clubId) {
+		log.info("동호회 분기별 가입자 수 조회 - 동호회 ID: {}", clubId);
+		return clubRepository.getQuarterlyJoinStats(clubId);
 	}
 
 }

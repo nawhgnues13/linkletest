@@ -13,10 +13,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ggamakun.linkle.domain.club.dto.AgeDistributionDto;
 import com.ggamakun.linkle.domain.club.dto.ClubDetailDto;
 import com.ggamakun.linkle.domain.club.dto.ClubMemberDto;
 import com.ggamakun.linkle.domain.club.dto.ClubSummary;
 import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
+import com.ggamakun.linkle.domain.club.dto.GenderRatioDto;
+import com.ggamakun.linkle.domain.club.dto.MonthlyAttendanceDto;
+import com.ggamakun.linkle.domain.club.dto.QuarterlyJoinDto;
 import com.ggamakun.linkle.domain.club.dto.UpdateClubRequestDto;
 import com.ggamakun.linkle.domain.club.entity.Club;
 import com.ggamakun.linkle.domain.club.service.IClubService;
@@ -90,6 +94,30 @@ public class ClubController {
 	public ResponseEntity<List<ClubMemberDto>> getClubMembers(@PathVariable("clubid") Integer clubId){
 		List<ClubMemberDto> members = clubService.getClubMembers(clubId);
 		return ResponseEntity.ok(members);
+	}
+	
+	@GetMapping("/clubs/{clubId}/dashboard/attendance")
+	public ResponseEntity<List<MonthlyAttendanceDto>> getMonthlyAttendance(@PathVariable("clubId") Integer clubId) {
+		List<MonthlyAttendanceDto> data = clubService.getMonthlyAttendance(clubId);
+		return ResponseEntity.ok(data);
+	}
+	
+	@GetMapping("/clubs/{clubId}/dashboard/age")
+	public ResponseEntity<List<AgeDistributionDto>> getAgeDistribution(@PathVariable("clubId") Integer clubId) {
+		List<AgeDistributionDto> data = clubService.getAgeDistribution(clubId);
+		return ResponseEntity.ok(data);
+	}
+	
+	@GetMapping("/clubs/{clubId}/dashboard/gender")
+	public ResponseEntity<GenderRatioDto> getGenderRatio(@PathVariable("clubId") Integer clubId) {
+		GenderRatioDto data = clubService.getGenderRatio(clubId);
+		return ResponseEntity.ok(data);
+	}
+	
+	@GetMapping("/clubs/{clubId}/dashboard/quarterly-join")
+	public ResponseEntity<List<QuarterlyJoinDto>> getQuarterlyJoinStats(@PathVariable("clubId") Integer clubId) {
+		List<QuarterlyJoinDto> data = clubService.getQuarterlyJoinStats(clubId);
+		return ResponseEntity.ok(data);
 	}
 }
 

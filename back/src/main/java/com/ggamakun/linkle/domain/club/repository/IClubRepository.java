@@ -5,10 +5,14 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.ggamakun.linkle.domain.club.dto.AgeDistributionDto;
 import com.ggamakun.linkle.domain.club.dto.ClubDetailDto;
 import com.ggamakun.linkle.domain.club.dto.ClubMemberDto;
 import com.ggamakun.linkle.domain.club.dto.ClubSummary;
 import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
+import com.ggamakun.linkle.domain.club.dto.GenderRatioDto;
+import com.ggamakun.linkle.domain.club.dto.MonthlyAttendanceDto;
+import com.ggamakun.linkle.domain.club.dto.QuarterlyJoinDto;
 import com.ggamakun.linkle.domain.club.dto.UpdateClubRequestDto;
 import com.ggamakun.linkle.domain.club.entity.Club;
 
@@ -47,4 +51,10 @@ public interface IClubRepository {
 
 	//동호회 회원 목록 조회
 	List<ClubMemberDto> findMembersByClubId(Integer clubId);
+	
+	// 대시보드 통계 조회
+	List<MonthlyAttendanceDto> getMonthlyAttendance(@Param("clubId") Integer clubId);
+	List<AgeDistributionDto> getAgeDistribution(@Param("clubId") Integer clubId);
+	GenderRatioDto getGenderRatio(@Param("clubId") Integer clubId);
+	List<QuarterlyJoinDto> getQuarterlyJoinStats(@Param("clubId") Integer clubId);
 }
