@@ -1,7 +1,5 @@
 package com.ggamakun.linkle.domain.club.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,5 +14,5 @@ public class MonthlyAttendanceDto {
     private Integer memberId;
     private String nickname;
     private String profileImageUrl;
-    private List<Double> attendanceRates;
+    private Double avgAttendanceRate;
 }
