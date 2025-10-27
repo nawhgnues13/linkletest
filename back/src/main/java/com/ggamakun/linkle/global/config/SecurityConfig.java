@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .requestMatchers("/login/oauth2/**").permitAll()
                 .requestMatchers("/login/oauth2/code/**").permitAll()
                 .requestMatchers("/login/oauth2/code/kakao").permitAll()
+                .requestMatchers("/chatbot/**").authenticated()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("GET","/posts/").permitAll()
                 .requestMatchers("GET","/posts/summary").permitAll()

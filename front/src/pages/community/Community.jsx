@@ -13,7 +13,7 @@ const CATEGORY_META = [
   { icon: '🎨', title: '문화/예술', dbName: '문화·예술' },
   { icon: '🎮', title: '취미', dbName: '취미' },
   { icon: '📚', title: '자기계발', dbName: '자기계발' },
-  { icon: '🍴', title: '푸드 드링크', dbName: '푸드·드링크' },
+  { icon: '🍴', title: '푸드/드링크', dbName: '푸드·드링크' },
   { icon: '✈️', title: '여행/아웃도어', dbName: '여행·아웃도어' },
   { icon: '🕹️', title: '게임/오락', dbName: '게임·오락' },
   { icon: '🌍', title: '외국어', dbName: '외국어' },
