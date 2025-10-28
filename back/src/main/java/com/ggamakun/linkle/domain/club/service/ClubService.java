@@ -13,6 +13,7 @@ import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
 import com.ggamakun.linkle.domain.club.dto.GenderRatioDto;
 import com.ggamakun.linkle.domain.club.dto.MonthlyAttendanceDto;
 import com.ggamakun.linkle.domain.club.dto.QuarterlyJoinDto;
+import com.ggamakun.linkle.domain.club.dto.RecommendClubDto;
 import com.ggamakun.linkle.domain.club.dto.SearchClubDto;
 import com.ggamakun.linkle.domain.club.dto.UpdateClubRequestDto;
 import com.ggamakun.linkle.domain.club.entity.Club;
@@ -159,4 +160,21 @@ public class ClubService implements IClubService{
 	    return clubRepository.searchClubs(keyword.trim());
 	}
 
+	@Override
+	public List<RecommendClubDto> recommendByCategory(Integer memberId) {
+	    log.info("카테고리 기반 동호회 추천 - 회원 ID: {}", memberId);
+	    return clubRepository.recommendByCategory(memberId);
+	}
+
+	@Override
+	public List<RecommendClubDto> recommendByRegion(Integer memberId) {
+	    log.info("지역 기반 동호회 추천 - 회원 ID: {}", memberId);
+	    return clubRepository.recommendByRegion(memberId);
+	}
+
+	@Override
+	public List<RecommendClubDto> recommendByCombined(Integer memberId) {
+	    log.info("복합 동호회 추천 - 회원 ID: {}", memberId);
+	    return clubRepository.recommendByCombined(memberId);
+	}
 }

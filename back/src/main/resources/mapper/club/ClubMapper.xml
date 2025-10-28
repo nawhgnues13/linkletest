@@ -331,4 +331,126 @@
 	    ORDER BY c.created_at DESC
 	</select>
 	
+	<!-- 카테고리 기반 추천 -->
+	<select id="recommendByCategory" resultType="com.ggamakun.linkle.domain.club.dto.RecommendClubDto">
+	    SELECT 
+	        c.club_id AS clubId,
+	        c.name AS clubName,
+	        c.description AS description,
+	        f.file_link AS fileLink,
+	        cat.name AS categoryName,
+	        c.region AS region,
+	        COUNT(cm2.member_id) AS memberCount,
+	        TO_CHAR(c.opened_at, 'YYYY-MM-DD') AS openedAt
+	    FROM CLUB c
+	    LEFT JOIN FILE_STORAGE f ON c.file_id = f.file_id AND f.is_deleted = 'N'
+	    LEFT JOIN CATEGORY cat ON c.category_id = cat.category_id
+	    LEFT JOIN CLUB_MEMBER cm2 ON c.club_id = cm2.club_id 
+	        AND cm2.status = 'APPROVED' 
+	        AND cm2.is_deleted = 'N'
+	    WHERE c.category_id IN (
+	        SELECT DISTINCT cl.category_id
+	        FROM CLUB cl
+	        JOIN CLUB_MEMBER cm ON cl.club_id = cm.club_id
+	        WHERE cm.member_id = #{memberId}
+	        AND cm.status = 'APPROVED'
+	        AND cm.is_deleted = 'N'
+	        AND cl.category_id IS NOT NULL
+	    )
+	    AND c.club_id NOT IN (
+	        SELECT club_id 
+	        FROM CLUB_MEMBER 
+	        WHERE member_id = #{memberId}
+	        AND is_deleted = 'N'
+	    )
+	    AND c.is_deleted = 'N'
+	    GROUP BY c.club_id, c.name, c.description, f.file_link, cat.name, c.region, c.opened_at
+	    ORDER BY c.opened_at DESC
+	</select>
+	
+	<!-- 지역 기반 추천 -->
+	<select id="recommendByRegion" resultType="com.ggamakun.linkle.domain.club.dto.RecommendClubDto">
+	    SELECT 
+	        c.club_id AS clubId,
+	        c.name AS clubName,
+	        c.description AS description,
+	        f.file_link AS fileLink,
+	        cat.name AS categoryName,
+	        c.region AS region,
+	        COUNT(cm2.member_id) AS memberCount,
+	        TO_CHAR(c.opened_at, 'YYYY-MM-DD') AS openedAt
+	    FROM CLUB c
+	    LEFT JOIN FILE_STORAGE f ON c.file_id = f.file_id AND f.is_deleted = 'N'
+	    LEFT JOIN CATEGORY cat ON c.category_id = cat.category_id
+	    LEFT JOIN CLUB_MEMBER cm2 ON c.club_id = cm2.club_id 
+	        AND cm2.status = 'APPROVED' 
+	        AND cm2.is_deleted = 'N'
+	    WHERE c.region IN (
+	        SELECT DISTINCT cl.region
+	        FROM CLUB cl
+	        JOIN CLUB_MEMBER cm ON cl.club_id = cm.club_id
+	        WHERE cm.member_id = #{memberId}
+	        AND cm.status = 'APPROVED'
+	        AND cm.is_deleted = 'N'
+	        AND cl.region IS NOT NULL
+	    )
+	    AND c.club_id NOT IN (
+	        SELECT club_id 
+	        FROM CLUB_MEMBER 
+	        WHERE member_id = #{memberId}
+	        AND is_deleted = 'N'
+	    )
+	    AND c.is_deleted = 'N'
+	    GROUP BY c.club_id, c.name, c.description, f.file_link, cat.name, c.region, c.opened_at
+	    ORDER BY c.opened_at DESC
+	</select>
+	
+	<!-- 복합 추천 (카테고리 + 지역) -->
+	<select id="recommendByCombined" resultType="com.ggamakun.linkle.domain.club.dto.RecommendClubDto">
+	    SELECT 
+	        c.club_id AS clubId,
+	        c.name AS clubName,
+	        c.description AS description,
+	        f.file_link AS fileLink,
+	        cat.name AS categoryName,
+	        c.region AS region,
+	        COUNT(cm2.member_id) AS memberCount,
+	        TO_CHAR(c.opened_at, 'YYYY-MM-DD') AS openedAt
+	    FROM CLUB c
+	    LEFT JOIN FILE_STORAGE f ON c.file_id = f.file_id AND f.is_deleted = 'N'
+	    LEFT JOIN CATEGORY cat ON c.category_id = cat.category_id
+	    LEFT JOIN CLUB_MEMBER cm2 ON c.club_id = cm2.club_id 
+	        AND cm2.status = 'APPROVED' 
+	        AND cm2.is_deleted = 'N'
+	    WHERE (
+	        c.category_id IN (
+	            SELECT DISTINCT cl.category_id
+	            FROM CLUB cl
+	            JOIN CLUB_MEMBER cm ON cl.club_id = cm.club_id
+	            WHERE cm.member_id = #{memberId}
+	            AND cm.status = 'APPROVED'
+	            AND cm.is_deleted = 'N'
+	            AND cl.category_id IS NOT NULL
+	        )
+	        OR c.region IN (
+	            SELECT DISTINCT cl.region
+	            FROM CLUB cl
+	            JOIN CLUB_MEMBER cm ON cl.club_id = cm.club_id
+	            WHERE cm.member_id = #{memberId}
+	            AND cm.status = 'APPROVED'
+	            AND cm.is_deleted = 'N'
+	            AND cl.region IS NOT NULL
+	        )
+	    )
+	    AND c.club_id NOT IN (
+	        SELECT club_id 
+	        FROM CLUB_MEMBER 
+	        WHERE member_id = #{memberId}
+	        AND is_deleted = 'N'
+	    )
+	    AND c.is_deleted = 'N'
+	    GROUP BY c.club_id, c.name, c.description, f.file_link, cat.name, c.region, c.opened_at
+	    ORDER BY c.opened_at DESC
+	</select>
+	
 </mapper>

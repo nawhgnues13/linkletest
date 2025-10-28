@@ -9,6 +9,7 @@ import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
 import com.ggamakun.linkle.domain.club.dto.GenderRatioDto;
 import com.ggamakun.linkle.domain.club.dto.MonthlyAttendanceDto;
 import com.ggamakun.linkle.domain.club.dto.QuarterlyJoinDto;
+import com.ggamakun.linkle.domain.club.dto.RecommendClubDto;
 import com.ggamakun.linkle.domain.club.dto.SearchClubDto;
 import com.ggamakun.linkle.domain.club.dto.UpdateClubRequestDto;
 import com.ggamakun.linkle.domain.club.entity.Club;
@@ -41,4 +42,12 @@ public interface IClubService {
 	// 동호회 검색
 	List<SearchClubDto> searchClubs(String keyword);
 
+	// 동호회 추천 - 카테고리 기반
+	List<RecommendClubDto> recommendByCategory(Integer memberId);
+
+	// 동호회 추천 - 지역 기반
+	List<RecommendClubDto> recommendByRegion(Integer memberId);
+
+	// 동호회 추천 - 복합 (카테고리 + 지역)
+	List<RecommendClubDto> recommendByCombined(Integer memberId);
 }

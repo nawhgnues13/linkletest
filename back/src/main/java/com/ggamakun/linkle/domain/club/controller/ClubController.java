@@ -1,5 +1,7 @@
 package com.ggamakun.linkle.domain.club.controller;
 
+
+
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
 import com.ggamakun.linkle.domain.club.dto.GenderRatioDto;
 import com.ggamakun.linkle.domain.club.dto.MonthlyAttendanceDto;
 import com.ggamakun.linkle.domain.club.dto.QuarterlyJoinDto;
+import com.ggamakun.linkle.domain.club.dto.RecommendClubDto;
 import com.ggamakun.linkle.domain.club.dto.SearchClubDto;
 import com.ggamakun.linkle.domain.club.dto.UpdateClubRequestDto;
 import com.ggamakun.linkle.domain.club.entity.Club;
@@ -31,9 +34,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @Tag(name = "동호회", description = "동호회 관련 API")
 public class ClubController {
 	
@@ -119,6 +124,30 @@ public class ClubController {
 	public ResponseEntity<List<SearchClubDto>> searchClubs(@RequestParam("keyword") String keyword) {
 	    List<SearchClubDto> results = clubService.searchClubs(keyword);
 	    return ResponseEntity.ok(results);
+	}
+	
+	@GetMapping("/clubs/recommend/category")
+	public ResponseEntity<List<RecommendClubDto>> recommendByCategory(
+			@AuthenticationPrincipal CustomUserDetails userDetails) {
+		log.info("카테고리 기반 동호회 추천 요청 - 회원 ID: {}", userDetails.getMember().getMemberId());
+		List<RecommendClubDto> recommendations = clubService.recommendByCategory(userDetails.getMember().getMemberId());
+		return ResponseEntity.ok(recommendations);
+	}
+
+	@GetMapping("/clubs/recommend/region")
+	public ResponseEntity<List<RecommendClubDto>> recommendByRegion(
+			@AuthenticationPrincipal CustomUserDetails userDetails) {
+		log.info("지역 기반 동호회 추천 요청 - 회원 ID: {}", userDetails.getMember().getMemberId());
+		List<RecommendClubDto> recommendations = clubService.recommendByRegion(userDetails.getMember().getMemberId());
+		return ResponseEntity.ok(recommendations);
+	}
+
+	@GetMapping("/clubs/recommend/combined")
+	public ResponseEntity<List<RecommendClubDto>> recommendByCombined(
+			@AuthenticationPrincipal CustomUserDetails userDetails) {
+		log.info("복합 동호회 추천 요청 - 회원 ID: {}", userDetails.getMember().getMemberId());
+		List<RecommendClubDto> recommendations = clubService.recommendByCombined(userDetails.getMember().getMemberId());
+		return ResponseEntity.ok(recommendations);
 	}
 }
 
