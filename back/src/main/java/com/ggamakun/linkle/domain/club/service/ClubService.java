@@ -1,5 +1,6 @@
 package com.ggamakun.linkle.domain.club.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -7,12 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ggamakun.linkle.domain.club.dto.AgeDistributionDto;
 import com.ggamakun.linkle.domain.club.dto.ClubDetailDto;
-import com.ggamakun.linkle.domain.club.dto.ClubMemberDto;
 import com.ggamakun.linkle.domain.club.dto.ClubSummary;
 import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
 import com.ggamakun.linkle.domain.club.dto.GenderRatioDto;
 import com.ggamakun.linkle.domain.club.dto.MonthlyAttendanceDto;
 import com.ggamakun.linkle.domain.club.dto.QuarterlyJoinDto;
+import com.ggamakun.linkle.domain.club.dto.SearchClubDto;
 import com.ggamakun.linkle.domain.club.dto.UpdateClubRequestDto;
 import com.ggamakun.linkle.domain.club.entity.Club;
 import com.ggamakun.linkle.domain.club.repository.IClubRepository;
@@ -148,6 +149,14 @@ public class ClubService implements IClubService{
 	public List<QuarterlyJoinDto> getQuarterlyJoinStats(Integer clubId) {
 		log.info("동호회 분기별 가입자 수 조회 - 동호회 ID: {}", clubId);
 		return clubRepository.getQuarterlyJoinStats(clubId);
+	}
+	
+	@Override
+	public List<SearchClubDto> searchClubs(String keyword) {
+	    if (keyword == null || keyword.trim().isEmpty()) {
+	        return new ArrayList<>();
+	    }
+	    return clubRepository.searchClubs(keyword.trim());
 	}
 
 }

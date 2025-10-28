@@ -11,16 +11,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ggamakun.linkle.domain.club.dto.AgeDistributionDto;
 import com.ggamakun.linkle.domain.club.dto.ClubDetailDto;
-import com.ggamakun.linkle.domain.club.dto.ClubMemberDto;
 import com.ggamakun.linkle.domain.club.dto.ClubSummary;
 import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
 import com.ggamakun.linkle.domain.club.dto.GenderRatioDto;
 import com.ggamakun.linkle.domain.club.dto.MonthlyAttendanceDto;
 import com.ggamakun.linkle.domain.club.dto.QuarterlyJoinDto;
+import com.ggamakun.linkle.domain.club.dto.SearchClubDto;
 import com.ggamakun.linkle.domain.club.dto.UpdateClubRequestDto;
 import com.ggamakun.linkle.domain.club.entity.Club;
 import com.ggamakun.linkle.domain.club.service.IClubService;
@@ -112,6 +113,12 @@ public class ClubController {
 	public ResponseEntity<List<QuarterlyJoinDto>> getQuarterlyJoinStats(@PathVariable("clubId") Integer clubId) {
 		List<QuarterlyJoinDto> data = clubService.getQuarterlyJoinStats(clubId);
 		return ResponseEntity.ok(data);
+	}
+	
+	@GetMapping("/search")
+	public ResponseEntity<List<SearchClubDto>> searchClubs(@RequestParam("keyword") String keyword) {
+	    List<SearchClubDto> results = clubService.searchClubs(keyword);
+	    return ResponseEntity.ok(results);
 	}
 }
 

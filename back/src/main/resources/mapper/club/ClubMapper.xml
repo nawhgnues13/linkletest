@@ -293,5 +293,42 @@
             TO_CHAR(cm.joined_at, 'Q')
         ORDER BY year, quarter
     </select>
+    
+    <!-- 동호회 검색 -->
+	<select id="searchClubs" resultType="com.ggamakun.linkle.domain.club.dto.SearchClubDto">
+	    SELECT
+	        c.club_id AS clubId,
+	        c.name AS clubName,
+	        c.description AS description,
+	        c.region AS region,
+	        cat.name AS categoryName,
+	        m.nickname AS leaderNickname,
+	        f.file_link AS fileLink,
+	        COUNT(cm.member_id) AS currentMembers,
+	        c.max_members AS maxMembers
+	    FROM CLUB c
+	    LEFT JOIN MEMBER m ON c.leader_id = m.member_id
+	    LEFT JOIN CATEGORY cat ON c.category_id = cat.category_id
+	    LEFT JOIN FILE_STORAGE f ON c.file_id = f.file_id AND f.is_deleted = 'N'
+	    LEFT JOIN CLUB_MEMBER cm ON c.club_id = cm.club_id 
+	        AND cm.status = 'APPROVED' 
+	        AND cm.is_deleted = 'N'
+	    WHERE c.is_deleted = 'N'
+	        AND (
+	            UPPER(c.name) LIKE '%' || UPPER(#{keyword}) || '%'
+	            OR UPPER(m.nickname) LIKE '%' || UPPER(#{keyword}) || '%'
+	        )
+	    GROUP BY 
+	        c.club_id, 
+	        c.name, 
+	        c.description, 
+	        c.region, 
+	        cat.name, 
+	        m.nickname, 
+	        f.file_link, 
+	        c.max_members,
+	        c.created_at
+	    ORDER BY c.created_at DESC
+	</select>
 	
 </mapper>

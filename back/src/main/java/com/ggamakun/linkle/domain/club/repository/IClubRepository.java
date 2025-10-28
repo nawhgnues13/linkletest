@@ -13,6 +13,7 @@ import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
 import com.ggamakun.linkle.domain.club.dto.GenderRatioDto;
 import com.ggamakun.linkle.domain.club.dto.MonthlyAttendanceDto;
 import com.ggamakun.linkle.domain.club.dto.QuarterlyJoinDto;
+import com.ggamakun.linkle.domain.club.dto.SearchClubDto;
 import com.ggamakun.linkle.domain.club.dto.UpdateClubRequestDto;
 import com.ggamakun.linkle.domain.club.entity.Club;
 
@@ -57,4 +58,7 @@ public interface IClubRepository {
 	List<AgeDistributionDto> getAgeDistribution(@Param("clubId") Integer clubId);
 	GenderRatioDto getGenderRatio(@Param("clubId") Integer clubId);
 	List<QuarterlyJoinDto> getQuarterlyJoinStats(@Param("clubId") Integer clubId);
+	
+	// 동호회 검색
+	List<SearchClubDto> searchClubs(@Param("keyword") String keyword);
 }
