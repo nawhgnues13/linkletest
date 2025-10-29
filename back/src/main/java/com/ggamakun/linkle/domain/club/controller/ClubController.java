@@ -149,5 +149,38 @@ public class ClubController {
 		List<RecommendClubDto> recommendations = clubService.recommendByCombined(userDetails.getMember().getMemberId());
 		return ResponseEntity.ok(recommendations);
 	}
+	
+	@GetMapping("/clubs/recent")
+	public ResponseEntity<List<RecommendClubDto>> getRecentClubs() {
+		log.info("최근 생성 동호회 조회 요청 (메인용)");
+		List<RecommendClubDto> clubs = clubService.getRecentClubs();
+		return ResponseEntity.ok(clubs);
+	}
+
+	@GetMapping("/clubs/recent/all")
+	public ResponseEntity<List<RecommendClubDto>> getRecentClubsAll(
+			@RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+			@RequestParam(value = "cursor", required = false) Integer cursor) {
+		log.info("최근 생성 동호회 조회 요청 (더보기용) - size: {}, cursor: {}", size, cursor);
+		List<RecommendClubDto> clubs = clubService.getRecentClubsAll(size, cursor);
+		return ResponseEntity.ok(clubs);
+	}
+
+	@GetMapping("/clubs/category/{categoryId}")
+	public ResponseEntity<List<RecommendClubDto>> getClubsByCategory(@PathVariable("categoryId") Integer categoryId) {
+		log.info("카테고리별 동호회 조회 요청 (메인용) - 카테고리 ID: {}", categoryId);
+		List<RecommendClubDto> clubs = clubService.getClubsByCategory(categoryId);
+		return ResponseEntity.ok(clubs);
+	}
+
+	@GetMapping("/clubs/category/{categoryId}/all")
+	public ResponseEntity<List<RecommendClubDto>> getClubsByCategoryAll(
+			@PathVariable("categoryId") Integer categoryId,
+			@RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+			@RequestParam(value = "cursor", required = false) Integer cursor) {
+		log.info("카테고리별 동호회 조회 요청 (더보기용) - 카테고리 ID: {}, size: {}, cursor: {}", categoryId, size, cursor);
+		List<RecommendClubDto> clubs = clubService.getClubsByCategoryAll(categoryId, size, cursor);
+		return ResponseEntity.ok(clubs);
+	}
 }
 

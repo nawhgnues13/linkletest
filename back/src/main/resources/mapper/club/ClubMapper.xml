@@ -453,4 +453,120 @@
 	    ORDER BY c.opened_at DESC
 	</select>
 	
+	<!-- 최근 생성 동호회 조회 (메인용 - 3개) -->
+	<select id="findRecentClubs" resultType="com.ggamakun.linkle.domain.club.dto.RecommendClubDto">
+	    <![CDATA[
+	    SELECT * FROM (
+	        SELECT 
+	            c.club_id AS clubId,
+	            c.name AS clubName,
+	            c.description AS description,
+	            f.file_link AS fileLink,
+	            cat.name AS categoryName,
+	            c.region AS region,
+	            COUNT(cm.member_id) AS memberCount,
+	            TO_CHAR(c.opened_at, 'YYYY-MM-DD') AS openedAt
+	        FROM CLUB c
+	        LEFT JOIN FILE_STORAGE f ON c.file_id = f.file_id AND f.is_deleted = 'N'
+	        LEFT JOIN CATEGORY cat ON c.category_id = cat.category_id
+	        LEFT JOIN CLUB_MEMBER cm ON c.club_id = cm.club_id 
+	            AND cm.status = 'APPROVED' 
+	            AND cm.is_deleted = 'N'
+	        WHERE c.is_deleted = 'N'
+	        GROUP BY c.club_id, c.name, c.description, f.file_link, cat.name, c.region, c.opened_at
+	        ORDER BY c.opened_at DESC
+	    )
+	    WHERE ROWNUM <= 3
+	    ]]>
+	</select>
+	
+	<!-- 최근 생성 동호회 조회 (더보기용 - 무한 스크롤) -->
+	<select id="findRecentClubsAll" resultType="com.ggamakun.linkle.domain.club.dto.RecommendClubDto">
+	    SELECT * FROM (
+	        SELECT 
+	            c.club_id AS clubId,
+	            c.name AS clubName,
+	            c.description AS description,
+	            f.file_link AS fileLink,
+	            cat.name AS categoryName,
+	            c.region AS region,
+	            COUNT(cm.member_id) AS memberCount,
+	            TO_CHAR(c.opened_at, 'YYYY-MM-DD') AS openedAt
+	        FROM CLUB c
+	        LEFT JOIN FILE_STORAGE f ON c.file_id = f.file_id AND f.is_deleted = 'N'
+	        LEFT JOIN CATEGORY cat ON c.category_id = cat.category_id
+	        LEFT JOIN CLUB_MEMBER cm ON c.club_id = cm.club_id 
+	            AND cm.status = 'APPROVED' 
+	            AND cm.is_deleted = 'N'
+	        <where>
+	            c.is_deleted = 'N'
+	            <if test="cursor != null">
+	                <![CDATA[AND c.club_id < #{cursor}]]>
+	            </if>
+	        </where>
+	        GROUP BY c.club_id, c.name, c.description, f.file_link, cat.name, c.region, c.opened_at
+	        ORDER BY c.opened_at DESC, c.club_id DESC
+	    )
+	    <![CDATA[WHERE ROWNUM <= #{size}]]>
+	</select>
+	
+	<!-- 카테고리별 동호회 조회 (메인용 - 3개) -->
+	<select id="findClubsByCategory" resultType="com.ggamakun.linkle.domain.club.dto.RecommendClubDto">
+	    <![CDATA[
+	    SELECT * FROM (
+	        SELECT 
+	            c.club_id AS clubId,
+	            c.name AS clubName,
+	            c.description AS description,
+	            f.file_link AS fileLink,
+	            cat.name AS categoryName,
+	            c.region AS region,
+	            COUNT(cm.member_id) AS memberCount,
+	            TO_CHAR(c.opened_at, 'YYYY-MM-DD') AS openedAt
+	        FROM CLUB c
+	        LEFT JOIN FILE_STORAGE f ON c.file_id = f.file_id AND f.is_deleted = 'N'
+	        LEFT JOIN CATEGORY cat ON c.category_id = cat.category_id
+	        LEFT JOIN CLUB_MEMBER cm ON c.club_id = cm.club_id 
+	            AND cm.status = 'APPROVED' 
+	            AND cm.is_deleted = 'N'
+	        WHERE c.is_deleted = 'N'
+	            AND c.category_id = #{categoryId}
+	        GROUP BY c.club_id, c.name, c.description, f.file_link, cat.name, c.region, c.opened_at
+	        ORDER BY c.opened_at DESC
+	    )
+	    WHERE ROWNUM <= 3
+	    ]]>
+	</select>
+	
+	<!-- 카테고리별 동호회 조회 (더보기용 - 무한 스크롤) -->
+	<select id="findClubsByCategoryAll" resultType="com.ggamakun.linkle.domain.club.dto.RecommendClubDto">
+	    SELECT * FROM (
+	        SELECT 
+	            c.club_id AS clubId,
+	            c.name AS clubName,
+	            c.description AS description,
+	            f.file_link AS fileLink,
+	            cat.name AS categoryName,
+	            c.region AS region,
+	            COUNT(cm.member_id) AS memberCount,
+	            TO_CHAR(c.opened_at, 'YYYY-MM-DD') AS openedAt
+	        FROM CLUB c
+	        LEFT JOIN FILE_STORAGE f ON c.file_id = f.file_id AND f.is_deleted = 'N'
+	        LEFT JOIN CATEGORY cat ON c.category_id = cat.category_id
+	        LEFT JOIN CLUB_MEMBER cm ON c.club_id = cm.club_id 
+	            AND cm.status = 'APPROVED' 
+	            AND cm.is_deleted = 'N'
+	        <where>
+	            c.is_deleted = 'N'
+	            AND c.category_id = #{categoryId}
+	            <if test="cursor != null">
+	                <![CDATA[AND c.club_id < #{cursor}]]>
+	            </if>
+	        </where>
+	        GROUP BY c.club_id, c.name, c.description, f.file_link, cat.name, c.region, c.opened_at
+	        ORDER BY c.opened_at DESC, c.club_id DESC
+	    )
+	    <![CDATA[WHERE ROWNUM <= #{size}]]>
+	</select>
+	
 </mapper>

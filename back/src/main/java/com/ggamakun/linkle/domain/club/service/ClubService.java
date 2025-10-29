@@ -177,4 +177,34 @@ public class ClubService implements IClubService{
 	    log.info("복합 동호회 추천 - 회원 ID: {}", memberId);
 	    return clubRepository.recommendByCombined(memberId);
 	}
+	
+	@Override
+	public List<RecommendClubDto> getRecentClubs() {
+	    log.info("최근 생성 동호회 조회 (메인용 - 3개)");
+	    return clubRepository.findRecentClubs();
+	}
+	
+	@Override
+	public List<RecommendClubDto> getRecentClubsAll(Integer size, Integer cursor) {
+	    log.info("최근 생성 동호회 조회 (더보기용) - size: {}, cursor: {}", size, cursor);
+	    if (size == null) {
+	        size = 10;
+	    }
+	    return clubRepository.findRecentClubsAll(size, cursor);
+	}
+	
+	@Override
+	public List<RecommendClubDto> getClubsByCategory(Integer categoryId) {
+	    log.info("카테고리별 동호회 조회 (메인용 - 3개) - 카테고리 ID: {}", categoryId);
+	    return clubRepository.findClubsByCategory(categoryId);
+	}
+	
+	@Override
+	public List<RecommendClubDto> getClubsByCategoryAll(Integer categoryId, Integer size, Integer cursor) {
+	    log.info("카테고리별 동호회 조회 (더보기용) - 카테고리 ID: {}, size: {}, cursor: {}", categoryId, size, cursor);
+	    if (size == null) {
+	        size = 10;
+	    }
+	    return clubRepository.findClubsByCategoryAll(categoryId, size, cursor);
+	}
 }

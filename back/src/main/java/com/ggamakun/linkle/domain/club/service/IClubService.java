@@ -50,4 +50,16 @@ public interface IClubService {
 
 	// 동호회 추천 - 복합 (카테고리 + 지역)
 	List<RecommendClubDto> recommendByCombined(Integer memberId);
+	
+	// 최근 생성 동호회 조회 (메인용 - 3개)
+	List<RecommendClubDto> getRecentClubs();
+
+	// 최근 생성 동호회 조회 (더보기용 - 무한 스크롤)
+	List<RecommendClubDto> getRecentClubsAll(Integer size, Integer cursor);
+
+	// 카테고리별 동호회 조회 (메인용 - 3개)
+	List<RecommendClubDto> getClubsByCategory(Integer categoryId);
+
+	// 카테고리별 동호회 조회 (더보기용 - 무한 스크롤)
+	List<RecommendClubDto> getClubsByCategoryAll(Integer categoryId, Integer size, Integer cursor);
 }
