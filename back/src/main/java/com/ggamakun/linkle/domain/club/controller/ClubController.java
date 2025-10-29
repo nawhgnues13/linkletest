@@ -120,7 +120,7 @@ public class ClubController {
 		return ResponseEntity.ok(data);
 	}
 	
-	@GetMapping("/search")
+	@GetMapping("/clubs/search")
 	public ResponseEntity<List<SearchClubDto>> searchClubs(@RequestParam("keyword") String keyword) {
 	    List<SearchClubDto> results = clubService.searchClubs(keyword);
 	    return ResponseEntity.ok(results);

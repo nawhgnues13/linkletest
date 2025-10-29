@@ -56,7 +56,7 @@ export const clubApi = {
 
   // 동호회 검색
   searchClubs: async (keyword) => {
-    return await get(`/search?keyword=${encodeURIComponent(keyword)}`);
+    return await get(`/clubs/search?keyword=${encodeURIComponent(keyword)}`);
   },
 
   // 최근 생성 동호회 조회 (메인용 - 3개)
