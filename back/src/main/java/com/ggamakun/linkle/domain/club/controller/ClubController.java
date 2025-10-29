@@ -53,6 +53,12 @@ public class ClubController {
 		return ResponseEntity.ok(clubs);
 	}
 
+	@GetMapping("/clubs/search")
+	public ResponseEntity<List<SearchClubDto>> searchClubs(@RequestParam(value = "keyword", required = false) String keyword) {
+	    List<SearchClubDto> results = clubService.searchClubs(keyword);
+	    return ResponseEntity.ok(results);
+	}
+
 	@PostMapping("/clubs")
 	public ResponseEntity<Club> createClub(
 			@Valid @RequestBody CreateClubRequestDto request,
@@ -63,19 +69,19 @@ public class ClubController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(club);
 	}
 	
-	@GetMapping("/clubs/{clubId}/member-count")
+	@GetMapping("/clubs/{clubId:\\d+}/member-count")
 	public ResponseEntity<Integer> getApprovedMemberCount(@PathVariable("clubId") Integer clubId) {
 		int count = clubService.getApprovedMemberCount(clubId);
 		return ResponseEntity.ok(count);
 	}
 	
-	@GetMapping("/clubs/{clubId}")
+	@GetMapping("/clubs/{clubId:\\d+}")
 	public ResponseEntity<ClubDetailDto> getClubDetail(@PathVariable("clubId") Integer clubId) {
 		ClubDetailDto club = clubService.getClubDetail(clubId);
 		return ResponseEntity.ok(club);
 	}
 	
-	@PutMapping("/clubs/{clubId}")
+	@PutMapping("/clubs/{clubId:\\d+}")
 	public ResponseEntity<Void> updateClub(
 			@PathVariable("clubId") Integer clubId,
 			@Valid @RequestBody UpdateClubRequestDto request,
@@ -86,7 +92,7 @@ public class ClubController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@DeleteMapping("/clubs/{clubId}")
+	@DeleteMapping("/clubs/{clubId:\\d+}")
 	public ResponseEntity<Void> deleteClub(
 			@PathVariable("clubId") Integer clubId,
 			@Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails
@@ -96,34 +102,28 @@ public class ClubController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@GetMapping("/clubs/{clubId}/dashboard/attendance")
+	@GetMapping("/clubs/{clubId:\\d+}/dashboard/attendance")
 	public ResponseEntity<List<MonthlyAttendanceDto>> getMonthlyAttendance(@PathVariable("clubId") Integer clubId) {
 		List<MonthlyAttendanceDto> data = clubService.getMonthlyAttendance(clubId);
 		return ResponseEntity.ok(data);
 	}
 	
-	@GetMapping("/clubs/{clubId}/dashboard/age")
+	@GetMapping("/clubs/{clubId:\\d+}/dashboard/age")
 	public ResponseEntity<List<AgeDistributionDto>> getAgeDistribution(@PathVariable("clubId") Integer clubId) {
 		List<AgeDistributionDto> data = clubService.getAgeDistribution(clubId);
 		return ResponseEntity.ok(data);
 	}
 	
-	@GetMapping("/clubs/{clubId}/dashboard/gender")
+	@GetMapping("/clubs/{clubId:\\d+}/dashboard/gender")
 	public ResponseEntity<GenderRatioDto> getGenderRatio(@PathVariable("clubId") Integer clubId) {
 		GenderRatioDto data = clubService.getGenderRatio(clubId);
 		return ResponseEntity.ok(data);
 	}
 	
-	@GetMapping("/clubs/{clubId}/dashboard/quarterly-join")
+	@GetMapping("/clubs/{clubId:\\d+}/dashboard/quarterly-join")
 	public ResponseEntity<List<QuarterlyJoinDto>> getQuarterlyJoinStats(@PathVariable("clubId") Integer clubId) {
 		List<QuarterlyJoinDto> data = clubService.getQuarterlyJoinStats(clubId);
 		return ResponseEntity.ok(data);
-	}
-	
-	@GetMapping("/clubs/search")
-	public ResponseEntity<List<SearchClubDto>> searchClubs(@RequestParam("keyword") String keyword) {
-	    List<SearchClubDto> results = clubService.searchClubs(keyword);
-	    return ResponseEntity.ok(results);
 	}
 	
 	@GetMapping("/clubs/recommend/category")
