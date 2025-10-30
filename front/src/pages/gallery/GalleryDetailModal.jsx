@@ -5,6 +5,8 @@ import useUserStore from '../../store/useUserStore';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import { useNavigate } from 'react-router-dom';
 import defaultProfile from '../../assets/images/default-profile.png';
+import AlertModal from '../../components/common/AlertModal';
+
 export default function GalleryDetailModal({ gallery, onClose, onDelete }) {
   const { user, isAuthenticated: isLoggedIn } = useUserStore();
   const [isLiked, setIsLiked] = useState(false);
@@ -13,6 +15,12 @@ export default function GalleryDetailModal({ gallery, onClose, onDelete }) {
   const [showMenu, setShowMenu] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [alertModal, setAlertModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    redirectTo: null,
+  });
   const menuRef = useRef(null);
   const navigate = useNavigate();
 
@@ -37,7 +45,8 @@ export default function GalleryDetailModal({ gallery, onClose, onDelete }) {
   const fetchLikeStatus = async () => {
     try {
       const response = await galleryApi.getGalleryLikeStatus(gallery.galleryId);
-      setIsLiked(response.isLiked || false);
+      console.log('좋아요 상태 응답:', response);
+      setIsLiked(response.liked || false);
       if (response.likeCount !== undefined) {
         setLikeCount(response.likeCount);
       }
@@ -59,20 +68,44 @@ export default function GalleryDetailModal({ gallery, onClose, onDelete }) {
     }
   };
 
+  const closeAlert = () => {
+    const redirectPath = alertModal.redirectTo;
+    setAlertModal({
+      isOpen: false,
+      title: '',
+      message: '',
+      redirectTo: null,
+    });
+
+    if (redirectPath) {
+      navigate(redirectPath);
+    }
+  };
+
   const handleLikeToggle = async () => {
     if (!isLoggedIn) {
-      alert('로그인이 필요합니다.');
+      setAlertModal({
+        isOpen: true,
+        title: '알림',
+        message: '로그인이 필요합니다.',
+        redirectTo: '/login',
+      });
       return;
     }
 
     try {
       setLoading(true);
       const response = await galleryApi.toggleGalleryLike(gallery.galleryId);
-      setIsLiked(response.isLiked);
+      console.log('좋아요 토글 응답:', response);
+      setIsLiked(response.liked);
       setLikeCount(response.likeCount);
     } catch (error) {
       console.error('좋아요 토글 실패:', error);
-      alert('좋아요 처리에 실패했습니다.');
+      setAlertModal({
+        isOpen: true,
+        title: '오류',
+        message: '좋아요 처리에 실패했습니다.',
+      });
     } finally {
       setLoading(false);
     }
@@ -81,11 +114,19 @@ export default function GalleryDetailModal({ gallery, onClose, onDelete }) {
   const handleDelete = async () => {
     try {
       await galleryApi.deleteGallery(gallery.galleryId);
-      alert('갤러리가 삭제되었습니다.');
+      setAlertModal({
+        isOpen: true,
+        title: '완료',
+        message: '갤러리가 삭제되었습니다.',
+      });
       onDelete();
     } catch (error) {
       console.error('삭제 실패:', error);
-      alert('삭제에 실패했습니다.');
+      setAlertModal({
+        isOpen: true,
+        title: '오류',
+        message: '삭제에 실패했습니다.',
+      });
     }
   };
 
@@ -109,7 +150,7 @@ export default function GalleryDetailModal({ gallery, onClose, onDelete }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* 이미지 영역 */}
-        <div className="bg-gray-200 flex items-center justify-center" style={{ height: '520px' }}>
+        <div className="bg-gray-100 flex items-center justify-center" style={{ height: '520px' }}>
           {gallery.fileLink ? (
             <img
               src={gallery.fileLink}
@@ -148,7 +189,7 @@ export default function GalleryDetailModal({ gallery, onClose, onDelete }) {
                 />
               </div>
               <div
-                onClick={() => navigate(`/clubs/${gallery.clubId}`)} // 백틱 사용!
+                onClick={() => navigate(`/clubs/${gallery.clubId}`)}
                 className="font-semibold text-gray-900 truncate cursor-pointer hover:text-blue-600"
               >
                 {gallery.clubName}
@@ -163,10 +204,9 @@ export default function GalleryDetailModal({ gallery, onClose, onDelete }) {
                 className="flex items-center gap-1 disabled:opacity-50"
               >
                 <svg
-                  className={`w-6 h-6 ${
-                    isLiked ? 'fill-red-500 text-red-500' : 'fill-none text-gray-400'
-                  }`}
-                  stroke="currentColor"
+                  className="w-6 h-6 transition-colors"
+                  fill={isLiked ? '#ef4444' : 'none'}
+                  stroke={isLiked ? '#ef4444' : '#9ca3af'}
                   viewBox="0 0 24 24"
                 >
                   <path
@@ -229,22 +269,22 @@ export default function GalleryDetailModal({ gallery, onClose, onDelete }) {
             </div>
           </div>
 
-          {/* 작성자 & 날짜 정보 */}
-          <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-            <div className="relative w-11 h-11 rounded-full overflow-hidden bg-white ring-1 ring-transparent flex-shrink-0">
-              <img
-                src={gallery.memberProfileImage || defaultProfile}
-                alt={gallery.nickname}
-                className="w-full h-full object-cover"
-              />
+          {/* 작성자 & 날짜 정보 & 닫기 버튼 */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="relative w-11 h-11 rounded-full overflow-hidden bg-white ring-1 ring-transparent flex-shrink-0">
+                <img
+                  src={gallery.memberProfileImage || defaultProfile}
+                  alt={gallery.nickname}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <span className="text-gray-700">{gallery.nickname || '익명'}</span>
+              <span className="text-gray-400">•</span>
+              <span className="text-gray-500">{gallery.createdAt}</span>
             </div>
-            <span className="text-gray-700">{gallery.nickname || '익명'}</span>
-            <span className="text-gray-400">•</span>
-            <span className="text-gray-500">{gallery.createdAt}</span>
-          </div>
 
-          {/* 닫기 버튼 */}
-          <div className="flex justify-end">
+            {/* 닫기 버튼 */}
             <button
               onClick={onClose}
               className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg"
@@ -264,6 +304,12 @@ export default function GalleryDetailModal({ gallery, onClose, onDelete }) {
         message="정말 삭제하시겠습니까?"
         confirmText="확인"
         cancelText="취소"
+      />
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        onClose={closeAlert}
+        title={alertModal.title}
+        message={alertModal.message}
       />
     </div>
   );

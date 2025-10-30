@@ -69,11 +69,6 @@ const ClubInfo = ({ clubId }) => {
             {club.openedAt ? new Date(club.openedAt).toLocaleDateString() : '-'}
           </span>
         </div>
-        {club.description && (
-          <div className="pt-3 border-t border-gray-100">
-            <p className="text-sm text-gray-600 whitespace-pre-wrap">{club.description}</p>
-          </div>
-        )}
       </div>
     </div>
   );

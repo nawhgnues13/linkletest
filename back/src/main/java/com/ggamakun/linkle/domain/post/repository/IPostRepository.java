@@ -24,9 +24,9 @@ public interface IPostRepository {
 
 	Integer insertPost(CreatePostRequest request);
 
-	int updatePost(@Param("postId")Integer postId, @Param("request")UpdatePostRequest request);
+	int updatePost(@Param("postId")Integer postId, @Param("request")UpdatePostRequest request, @Param("updatedBy") Integer updatedBy);
 
-	int deletePost(Integer postId);
+	int deletePost(@Param("postId")Integer postId, @Param("updatedBy") Integer updatedBy);
 
 	int increaseLikeCount(Integer postId);
 	

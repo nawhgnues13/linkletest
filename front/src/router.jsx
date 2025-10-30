@@ -16,7 +16,6 @@ import RegisterComplete from './pages/auth/RegisterComplete';
 import FindId from './pages/auth/FindId';
 import FindPassword from './pages/auth/FindPassword';
 import ResetPassword from './pages/auth/ResetPassword';
-import OAuth2Callback from './pages/auth/OAuth2Callback';
 import VerifyEmail from './pages/auth/VerifyEmail';
 import Community from '@pages/community/Community';
 import CommunityDetail from './pages/community/CommunityDetail';
@@ -104,10 +103,6 @@ const router = createBrowserRouter([
         <FindPassword />
       </AuthLayout>
     ),
-  },
-  {
-    path: '/auth/callback',
-    element: <OAuth2Callback />,
   },
   {
     path: '/auth/verify-email',

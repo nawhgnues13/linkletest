@@ -3,19 +3,20 @@ import { useEffect, useRef, useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import {
-  HeartIcon,
   ChatBubbleOvalLeftIcon,
   UserCircleIcon,
   PencilSquareIcon,
   TrashIcon,
   EllipsisHorizontalIcon,
 } from '@heroicons/react/24/outline';
-import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
+
 import { postApi } from '../../services/api/postApi';
 import { commentApi } from '../../services/api/commentApi';
 import { fileApi } from '../../services/api/fileApi';
 import useUserStore from '../../store/useUserStore';
 import DEFAULT_PROFILE from '../../assets/images/default-profile.png';
+import AlertModal from '../../components/common/AlertModal';
+import ConfirmModal from '../../components/common/ConfirmModal';
 
 function KebabMenu({ onEdit, onDelete }) {
   const [open, setOpen] = useState(false);
@@ -107,9 +108,27 @@ export default function PostDetail() {
   const [editingComment, setEditingComment] = useState(null);
   const [editContent, setEditContent] = useState('');
 
+  const [alertModal, setAlertModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    redirectTo: null,
+  });
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+    confirmText: '확인',
+    cancelText: '취소',
+    confirmButtonStyle: 'danger',
+  });
+
   // 🆕 fileId로 조회한 이미지 URL들
   const [imageUrls, setImageUrls] = useState([]);
   const [imagesLoading, setImagesLoading] = useState(false);
+
+  const [commentLikes, setCommentLikes] = useState({});
 
   const getProfileSrc = (url) => {
     if (!url || url.trim() === '' || url === 'null') {
@@ -158,17 +177,36 @@ export default function PostDetail() {
 
         if (isAuthenticated) {
           const likeStatus = await postApi.getLikeStatus(postId);
-          setLiked(likeStatus.isLiked);
+          setLiked(likeStatus.liked);
         }
       } catch (err) {
         console.error('게시글 조회 실패:', err);
 
         if (err.status === 401) {
           setErrorType('UNAUTHORIZED');
-          setError('로그인이 필요합니다.');
+          setAlertModal({
+            isOpen: true,
+            title: '알림',
+            message: '로그인 후 이용 가능합니다.',
+            redirectTo: '/community',
+          });
         } else if (err.status === 403) {
           setErrorType('FORBIDDEN');
-          setError('동호회 회원만 볼 수 있습니다.');
+          setAlertModal({
+            isOpen: true,
+            title: '알림',
+            message: '동호회 회원만 볼 수 있습니다.',
+            redirectTo: '/community',
+          });
+        } else if (err.status === 500 && err.message.includes('동호회')) {
+          // 🔹 500 에러지만 동호회 권한 관련 에러인 경우
+          setErrorType('FORBIDDEN');
+          setAlertModal({
+            isOpen: true,
+            title: '알림',
+            message: '동호회 회원만 볼 수 있습니다.',
+            redirectTo: '/community',
+          });
         } else if (err.status === 404) {
           setErrorType('NOT_FOUND');
           setError('게시글을 찾을 수 없습니다.');
@@ -185,6 +223,52 @@ export default function PostDetail() {
         setCommentsLoading(true);
         const data = await commentApi.getComments(postId);
         setComments(data);
+
+        // ✅ 로그인한 경우 각 댓글의 좋아요 상태 조회
+        if (isAuthenticated) {
+          const likeStatusPromises = data.map(async (comment) => {
+            try {
+              const status = await commentApi.getCommentLikeStatus(comment.commentId);
+              return { commentId: comment.commentId, ...status };
+            } catch {
+              return {
+                commentId: comment.commentId,
+                isLiked: false,
+                likeCount: comment.likeCount || 0,
+              };
+            }
+          });
+
+          const likeStatuses = await Promise.all(likeStatusPromises);
+          const likeStatusMap = {};
+          likeStatuses.forEach((status) => {
+            likeStatusMap[status.commentId] = {
+              isLiked: status.Liked,
+              likeCount: status.likeCount,
+            };
+          });
+          setCommentLikes(likeStatusMap);
+        } else {
+          // 비로그인 시 기본 좋아요 수만 표시
+          const likeStatusMap = {};
+          data.forEach((comment) => {
+            likeStatusMap[comment.commentId] = {
+              isLiked: false,
+              likeCount: comment.likeCount || 0,
+            };
+
+            // 대댓글도 처리
+            if (comment.replies && comment.replies.length > 0) {
+              comment.replies.forEach((reply) => {
+                likeStatusMap[reply.commentId] = {
+                  isLiked: false,
+                  likeCount: reply.likeCount || 0,
+                };
+              });
+            }
+          });
+          setCommentLikes(likeStatusMap);
+        }
       } catch (err) {
         console.error('댓글 목록 조회 실패:', err);
       } finally {
@@ -244,31 +328,68 @@ export default function PostDetail() {
 
   const canManage = isAuthenticated && user && post && Number(user.id) === Number(post.createdBy);
 
+  const closeAlert = () => {
+    const redirectPath = alertModal.redirectTo;
+    setAlertModal({ isOpen: false, title: '', message: '', redirectTo: null });
+
+    if (redirectPath) {
+      navigate(redirectPath);
+    }
+  };
+
+  const closeConfirm = () => {
+    setConfirmModal({
+      isOpen: false,
+      title: '',
+      message: '',
+      onConfirm: null,
+      confirmText: '확인',
+      cancelText: '취소',
+      confirmButtonStyle: 'danger',
+    });
+  };
+
   const handleLikeToggle = async () => {
     if (!isAuthenticated) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
+      setAlertModal({
+        isOpen: true,
+        title: '알림',
+        message: '로그인이 필요합니다.',
+        redirectTo: '/login',
+      });
       return;
     }
 
     try {
       const result = await postApi.toggleLike(postId);
-      setLiked(result.isLiked);
+      setLiked(result.liked);
       setLikeCount(result.likeCount);
     } catch (err) {
       console.error('좋아요 처리 실패:', err);
-      alert('좋아요 처리에 실패했습니다.');
+      setAlertModal({
+        isOpen: true,
+        title: '오류',
+        message: '좋아요 처리에 실패했습니다.',
+      });
     }
   };
 
   const handleCommentSubmit = async () => {
     if (!isAuthenticated) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
+      setAlertModal({
+        isOpen: true,
+        title: '알림',
+        message: '로그인이 필요합니다.',
+        redirectTo: '/login',
+      });
       return;
     }
     if (!newComment.trim()) {
-      alert('댓글 내용을 입력해주세요.');
+      setAlertModal({
+        isOpen: true,
+        title: '알림',
+        message: '댓글 내용을 입력해주세요.',
+      });
       return;
     }
 
@@ -280,21 +401,37 @@ export default function PostDetail() {
       setNewComment('');
       const data = await commentApi.getComments(postId);
       setComments(data);
-      alert('댓글이 등록되었습니다.');
+      setAlertModal({
+        isOpen: true,
+        title: '완료',
+        message: '댓글이 등록되었습니다.',
+      });
     } catch (err) {
       console.error('댓글 작성 실패:', err);
-      alert('댓글 작성에 실패했습니다.');
+      setAlertModal({
+        isOpen: true,
+        title: '오류',
+        message: '댓글 작성에 실패했습니다.',
+      });
     }
   };
 
   const handleReplySubmit = async (parentId) => {
     if (!isAuthenticated) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
+      setAlertModal({
+        isOpen: true,
+        title: '알림',
+        message: '로그인이 필요합니다.',
+        redirectTo: '/login',
+      });
       return;
     }
     if (!replyContent.trim()) {
-      alert('댓글 내용을 입력해주세요.');
+      setAlertModal({
+        isOpen: true,
+        title: '알림',
+        message: '댓글 내용을 입력해주세요.',
+      });
       return;
     }
 
@@ -307,10 +444,18 @@ export default function PostDetail() {
       setReplyingTo(null);
       const data = await commentApi.getComments(postId);
       setComments(data);
-      alert('댓글이 등록되었습니다.');
+      setAlertModal({
+        isOpen: true,
+        title: '완료',
+        message: '댓글이 등록되었습니다.',
+      });
     } catch (err) {
       console.error('대댓글 작성 실패:', err);
-      alert('댓글 작성에 실패했습니다.');
+      setAlertModal({
+        isOpen: true,
+        title: '오류',
+        message: '댓글 작성에 실패했습니다.',
+      });
     }
   };
 
@@ -321,7 +466,11 @@ export default function PostDetail() {
 
   const handleEditSubmit = async (commentId) => {
     if (!editContent.trim()) {
-      alert('댓글 내용을 입력해주세요.');
+      setAlertModal({
+        isOpen: true,
+        title: '알림',
+        message: '댓글 내용을 입력해주세요.',
+      });
       return;
     }
 
@@ -331,26 +480,102 @@ export default function PostDetail() {
       setEditContent('');
       const data = await commentApi.getComments(postId);
       setComments(data);
-      alert('댓글이 수정되었습니다.');
+      setAlertModal({
+        isOpen: true,
+        title: '완료',
+        message: '댓글이 수정되었습니다.',
+      });
     } catch (err) {
       console.error('댓글 수정 실패:', err);
-      alert('댓글 수정에 실패했습니다.');
+      setAlertModal({
+        isOpen: true,
+        title: '오류',
+        message: '댓글 수정에 실패했습니다.',
+      });
+    }
+  };
+
+  const handleCommentLikeToggle = async (commentId) => {
+    if (!isAuthenticated) {
+      setAlertModal({
+        isOpen: true,
+        title: '알림',
+        message: '로그인이 필요합니다.',
+        redirectTo: 'login',
+      });
+      return;
+    }
+
+    try {
+      const result = await commentApi.toggleCommentLike(commentId);
+
+      // 상태 업데이트
+      setCommentLikes((prev) => ({
+        ...prev,
+        [commentId]: {
+          isLiked: result.liked,
+          likeCount: result.likeCount,
+        },
+      }));
+    } catch (err) {
+      console.error('댓글 좋아요 처리 실패:', err);
+      setAlertModal({
+        isOpen: true,
+        title: '오류',
+        message: '좋아요 처리에 실패했습니다.',
+      });
     }
   };
 
   const handleDeleteComment = async (commentId) => {
-    const ok = window.confirm('이 댓글을 삭제하시겠습니까?');
-    if (!ok) return;
+    setConfirmModal({
+      isOpen: true,
+      title: '댓글 삭제',
+      message: '이 댓글을 삭제할까요?',
+      confirmText: '삭제',
+      confirmButtonStyle: 'danger',
+      onConfirm: async () => {
+        try {
+          await commentApi.deleteComment(commentId);
+          setAlertModal({
+            isOpen: true,
+            title: '완료',
+            message: '댓글이 삭제되었습니다.',
+          });
+          // 댓글 목록 새로고침
+          const data = await commentApi.getComments(postId);
+          setComments(data);
 
-    try {
-      await commentApi.deleteComment(commentId);
-      const data = await commentApi.getComments(postId);
-      setComments(data);
-      alert('댓글이 삭제되었습니다.');
-    } catch (err) {
-      console.error('댓글 삭제 실패:', err);
-      alert('댓글 삭제에 실패했습니다.');
-    }
+          // 로그인한 경우 댓글 좋아요 상태도 새로고침
+          if (isAuthenticated) {
+            const likeStatusPromises = data.map(async (comment) => {
+              try {
+                const status = await commentApi.getCommentLikeStatus(comment.commentId);
+                return { commentId: comment.commentId, ...status };
+              } catch {
+                return { commentId: comment.commentId, isLiked: false, likeCount: 0 };
+              }
+            });
+            const likeStatuses = await Promise.all(likeStatusPromises);
+            const likeMap = {};
+            likeStatuses.forEach((status) => {
+              likeMap[status.commentId] = {
+                isLiked: status.isLiked,
+                likeCount: status.likeCount,
+              };
+            });
+            setCommentLikes(likeMap);
+          }
+        } catch (err) {
+          console.error('댓글 삭제 실패:', err);
+          setAlertModal({
+            isOpen: true,
+            title: '오류',
+            message: '댓글 삭제에 실패했습니다.',
+          });
+        }
+      },
+    });
   };
 
   const formatCommentDate = (dateString) => {
@@ -371,17 +596,31 @@ export default function PostDetail() {
   };
 
   const doDelete = async () => {
-    const ok = window.confirm('이 게시글을 삭제할까요?');
-    if (!ok) return;
-
-    try {
-      await postApi.deletePost(post.postId);
-      alert('게시글이 삭제되었습니다.');
-      navigate('/community');
-    } catch (err) {
-      console.error('게시글 삭제 실패:', err);
-      alert('게시글 삭제에 실패했습니다.');
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: '게시글 삭제',
+      message: '이 게시글을 삭제할까요?',
+      confirmText: '삭제',
+      confirmButtonStyle: 'danger',
+      onConfirm: async () => {
+        try {
+          await postApi.deletePost(post.postId);
+          setAlertModal({
+            isOpen: true,
+            title: '완료',
+            message: '게시글이 삭제되었습니다.',
+            redirectTo: '/community',
+          });
+        } catch (err) {
+          console.error('게시글 삭제 실패:', err);
+          setAlertModal({
+            isOpen: true,
+            title: '오류',
+            message: '게시글 삭제에 실패했습니다.',
+          });
+        }
+      },
+    });
   };
 
   const totalComments = useMemo(() => {
@@ -395,46 +634,45 @@ export default function PostDetail() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-6 py-8 text-center">
+        <AlertModal
+          isOpen={alertModal.isOpen}
+          onClose={closeAlert}
+          title={alertModal.title}
+          message={alertModal.message}
+        />
         <div className="text-gray-500">게시글을 불러오는 중...</div>
       </div>
     );
   }
 
-  if (error || !post) {
+  // 401, 403 에러는 모달만 표시
+  if (errorType === 'UNAUTHORIZED' || errorType === 'FORBIDDEN') {
     return (
       <div className="max-w-4xl mx-auto px-6 py-8 text-center">
-        <div className="text-red-500 mb-4">{error || '게시글을 찾을 수 없습니다.'}</div>
-
-        {errorType === 'UNAUTHORIZED' && (
-          <button
-            onClick={() => navigate('/login')}
-            className="px-6 py-2 bg-[#4FA3FF] text-white rounded hover:bg-[#3d8edb]"
-          >
-            로그인하기
-          </button>
-        )}
-
-        {errorType === 'FORBIDDEN' && (
-          <button
-            onClick={() => navigate('/community')}
-            className="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-          >
-            목록으로 돌아가기
-          </button>
-        )}
-
-        {(errorType === 'NOT_FOUND' || !errorType) && (
-          <button
-            onClick={() => navigate('/community')}
-            className="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-          >
-            목록으로 돌아가기
-          </button>
-        )}
+        <AlertModal
+          isOpen={alertModal.isOpen}
+          onClose={closeAlert}
+          title={alertModal.title}
+          message={alertModal.message}
+        />
       </div>
     );
   }
 
+  // 404나 기타 에러는 에러 화면 표시
+  if (error || !post) {
+    return (
+      <div className="max-w-4xl mx-auto px-6 py-8 text-center">
+        <div className="text-red-500 mb-4">{error || '게시글을 찾을 수 없습니다.'}</div>
+        <button
+          onClick={() => navigate('/community')}
+          className="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+        >
+          목록으로 돌아가기
+        </button>
+      </div>
+    );
+  }
   return (
     <div className="max-w-4xl mx-auto px-6 py-8">
       <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
@@ -493,15 +731,20 @@ export default function PostDetail() {
         />
 
         <div className="flex items-center gap-4 text-sm text-gray-600">
-          <button
-            onClick={handleLikeToggle}
-            className="flex items-center gap-1 hover:text-red-500 transition"
-          >
-            {liked ? (
-              <HeartSolid className="w-5 h-5 text-red-500" />
-            ) : (
-              <HeartIcon className="w-5 h-5" />
-            )}
+          <button onClick={handleLikeToggle} className="flex items-center gap-1 transition-colors">
+            <svg
+              className="w-5 h-5 transition-colors"
+              fill={liked ? '#ef4444' : 'none'}
+              stroke={liked ? '#ef4444' : '#9ca3af'}
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
             <span>{likeCount}</span>
           </button>
           <div className="flex items-center gap-1">
@@ -609,9 +852,26 @@ export default function PostDetail() {
 
                       {comment.isDeleted !== 'Y' && (
                         <div className="mt-1 flex items-center gap-4 text-xs text-gray-500">
-                          <button className="flex items-center gap-1 hover:text-red-500">
-                            <HeartIcon className="w-4 h-4" />
-                            {comment.likeCount || 0}
+                          <button
+                            onClick={() => handleCommentLikeToggle(comment.commentId)}
+                            className="flex items-center gap-1 transition-colors"
+                          >
+                            <svg
+                              className="w-4 h-4 transition-colors"
+                              fill={commentLikes[comment.commentId]?.isLiked ? '#ef4444' : 'none'}
+                              stroke={
+                                commentLikes[comment.commentId]?.isLiked ? '#ef4444' : '#9ca3af'
+                              }
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                              />
+                            </svg>
+                            <span>{commentLikes[comment.commentId]?.likeCount || 0}</span>
                           </button>
                           <button
                             onClick={() => setReplyingTo(comment.commentId)}
@@ -727,9 +987,32 @@ export default function PostDetail() {
 
                                 {reply.isDeleted !== 'Y' && (
                                   <div className="mt-1 flex items-center gap-4 text-xs text-gray-500">
-                                    <button className="flex items-center gap-1 hover:text-red-500">
-                                      <HeartIcon className="w-4 h-4" />
-                                      {reply.likeCount || 0}
+                                    <button
+                                      onClick={() => handleCommentLikeToggle(reply.commentId)}
+                                      className="flex items-center gap-1 transition-colors"
+                                    >
+                                      <svg
+                                        className="w-4 h-4 transition-colors"
+                                        fill={
+                                          commentLikes[reply.commentId]?.isLiked
+                                            ? '#ef4444'
+                                            : 'none'
+                                        }
+                                        stroke={
+                                          commentLikes[reply.commentId]?.isLiked
+                                            ? '#ef4444'
+                                            : '#9ca3af'
+                                        }
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                                        />
+                                      </svg>
+                                      <span>{commentLikes[reply.commentId]?.likeCount || 0}</span>
                                     </button>
                                   </div>
                                 )}
@@ -748,6 +1031,22 @@ export default function PostDetail() {
       ) : (
         <div className="text-center py-8 text-gray-500">첫 댓글을 작성해보세요!</div>
       )}
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        onClose={closeAlert}
+        title={alertModal.title}
+        message={alertModal.message}
+      />
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={closeConfirm}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        cancelText={confirmModal.cancelText}
+        confirmButtonStyle={confirmModal.confirmButtonStyle}
+      />
     </div>
   );
 }

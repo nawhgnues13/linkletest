@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ggamakun.linkle.domain.club.dto.AgeDistributionDto;
 import com.ggamakun.linkle.domain.club.dto.ClubDetailDto;
+import com.ggamakun.linkle.domain.club.dto.ClubMemberDto;
 import com.ggamakun.linkle.domain.club.dto.ClubSummary;
 import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
 import com.ggamakun.linkle.domain.club.dto.GenderRatioDto;
@@ -28,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ClubService implements IClubService{
+public class ClubService implements IClubService {
 
 	private final IClubRepository clubRepository;
 	
@@ -206,5 +207,10 @@ public class ClubService implements IClubService{
 	        size = 10;
 	    }
 	    return clubRepository.findClubsByCategoryAll(categoryId, size, cursor);
+	}
+	
+	@Override
+	public List<ClubMemberDto> getClubMembers(Integer clubId) {
+		return clubRepository.findMembersByClubId(clubId);
 	}
 }

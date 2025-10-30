@@ -317,6 +317,7 @@
 	        AND (
 	            UPPER(c.name) LIKE '%' || UPPER(#{keyword}) || '%'
 	            OR UPPER(m.nickname) LIKE '%' || UPPER(#{keyword}) || '%'
+	            OR UPPER(c.description) LIKE '%' || UPPER(#{keyword}) || '%'
 	        )
 	    GROUP BY 
 	        c.club_id, 

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ggamakun.linkle.domain.club.dto.AgeDistributionDto;
 import com.ggamakun.linkle.domain.club.dto.ClubDetailDto;
+import com.ggamakun.linkle.domain.club.dto.ClubMemberDto;
 import com.ggamakun.linkle.domain.club.dto.ClubSummary;
 import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
 import com.ggamakun.linkle.domain.club.dto.GenderRatioDto;
@@ -181,6 +182,12 @@ public class ClubController {
 		log.info("카테고리별 동호회 조회 요청 (더보기용) - 카테고리 ID: {}, size: {}, cursor: {}", categoryId, size, cursor);
 		List<RecommendClubDto> clubs = clubService.getClubsByCategoryAll(categoryId, size, cursor);
 		return ResponseEntity.ok(clubs);
+	}
+	
+	@GetMapping("/clubs/{clubid}/members/summary")
+	public ResponseEntity<List<ClubMemberDto>> getClubMembers(@PathVariable("clubid") Integer clubId){
+		List<ClubMemberDto> members = clubService.getClubMembers(clubId);
+		return ResponseEntity.ok(members);
 	}
 }
 

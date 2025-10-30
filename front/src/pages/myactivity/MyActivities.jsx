@@ -41,6 +41,7 @@ const MyActivities = () => {
     isOpen: false,
     title: '',
     message: '',
+    redirectTo: null,
   });
 
   const itemsPerPage = 10;
@@ -49,6 +50,19 @@ const MyActivities = () => {
     fetchActivities();
     setCurrentPage(1);
   }, [filterType]);
+
+  const closeAlert = () => {
+    const redirectPath = alertModal.redirectTo;
+    setAlertModal({
+      isOpen: false,
+      title: '',
+      message: '',
+      redirectTo: null,
+    });
+    if (redirectPath) {
+      navigate(redirectPath);
+    }
+  };
 
   const fetchActivities = async () => {
     setLoading(true);
@@ -63,8 +77,12 @@ const MyActivities = () => {
     } catch (e) {
       console.error('활동 목록 조회 실패:', e);
       if (e?.response?.status === 401) {
-        alert('로그인이 필요합니다.');
-        navigate('/login');
+        setAlertModal({
+          isOpen: true,
+          title: '로그인 필요',
+          message: '로그인이 필요합니다.',
+          redirectTo: '/login', // 추가
+        });
       }
     } finally {
       setLoading(false);
@@ -312,8 +330,8 @@ const MyActivities = () => {
             onChange={(e) => setFilterType(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#4CA8FF]"
           >
-            <option value="all">내가 쓴 글</option>
-            <option value="comments">내가 쓴 댓글</option>
+            <option value="all">전체 글</option>
+            <option value="comments">댓글</option>
             <option value="likes">좋아요한 글</option>
           </select>
         </div>
@@ -384,7 +402,7 @@ const MyActivities = () => {
       {/* AlertModal */}
       <AlertModal
         isOpen={alertModal.isOpen}
-        onClose={() => setAlertModal({ ...alertModal, isOpen: false })}
+        onClose={closeAlert}
         title={alertModal.title}
         message={alertModal.message}
       />

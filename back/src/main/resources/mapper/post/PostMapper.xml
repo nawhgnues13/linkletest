@@ -31,16 +31,19 @@ SELECT
 
 SELECT
 	p.post_id AS postId,
+	c.club_id AS clubId,
 	c.name AS clubName,
 	p.images AS images,
 	p.title AS title,
+	p.content AS content,
+	p.scope AS scope,
 	p.view_count AS viewCount,
 	p.like_count AS likeCount,
 	p.comment_count AS commentCount,
 	p.created_at AS createdAt,
 	p.created_by AS createdBy,
 	m.name AS authorName,
-	m.nickname AS authorNickName,
+	m.nickname AS authorNickname,
 	cat.name AS categoryName,
 	parent_cat.name AS parentCategoryName
 FROM
@@ -114,6 +117,7 @@ VALUES
     <if test="request.content != null">     CONTENT   = #{request.content},</if>
     <if test="request.images != null">      IMAGES    = #{request.images},</if>
     <if test="request.scope != null">       SCOPE     = #{request.scope},</if>
+    UPDATED_BY = #{updatedBy},
     UPDATED_AT = SYSDATE
   </set>
   WHERE POST_ID = #{postId}
@@ -124,6 +128,7 @@ VALUES
 <update id="deletePost">
   UPDATE POST
   SET IS_DELETED = 'Y',
+  UPDATED_BY = #{updatedBy},
   UPDATED_AT = SYSDATE
   
   WHERE POST_ID = #{postId}

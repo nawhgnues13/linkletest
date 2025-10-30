@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ggamakun.linkle.domain.club.dto.AgeDistributionDto;
 import com.ggamakun.linkle.domain.club.dto.ClubDetailDto;
+import com.ggamakun.linkle.domain.club.dto.ClubMemberDto;
 import com.ggamakun.linkle.domain.club.dto.ClubSummary;
 import com.ggamakun.linkle.domain.club.dto.CreateClubRequestDto;
 import com.ggamakun.linkle.domain.club.dto.GenderRatioDto;
@@ -62,4 +63,7 @@ public interface IClubService {
 
 	// 카테고리별 동호회 조회 (더보기용 - 무한 스크롤)
 	List<RecommendClubDto> getClubsByCategoryAll(Integer categoryId, Integer size, Integer cursor);
+
+	// 동호회 회원 목록 조회
+	List<ClubMemberDto> getClubMembers(Integer clubId);
 }
