@@ -49,9 +49,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
         String method = request.getMethod();
-        log.info("[JWT Filter] Checking path: " + path);
-        boolean excluded = EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
-        log.info("[JWT Filter] Excluded: " + excluded);
         if(EXCLUDED_PATHS.stream().anyMatch(path::startsWith)) {
         	return true;
         }
@@ -65,12 +62,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) 
             throws ServletException, IOException {
         
+    	log.info("[JWT Filter] 요청 경로: {}", request.getRequestURI());
+    	
         String token = getTokenFromRequest(request);
+        log.info("[JWT Filter] 추출된 토큰: {}", token != null ? "존재함" : "없음");
         
         if (StringUtils.hasText(token) && jwtUtil.validateToken(token)) {
+        	boolean isValid = jwtUtil.validateToken(token);
+            log.info("[JWT Filter] 토큰 유효성: {}", isValid);
             String email = jwtUtil.getEmailFromToken(token);
+            log.info("[JWT Filter] 토큰에서 추출된 이메일: {}", email);
             
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            log.info("[JWT Filter] UserDetails 로드 성공: {}", userDetails != null);
             
             UsernamePasswordAuthenticationToken authentication = 
                 new UsernamePasswordAuthenticationToken(
@@ -81,6 +85,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info("[JWT Filter] 인증 정보 SecurityContext에 저장 완료");
         }
         
         filterChain.doFilter(request, response);
@@ -89,16 +94,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String getTokenFromRequest(HttpServletRequest request) {
     	// 1. Cookie에서 토큰 추출 시도
         if (request.getCookies() != null) {
+        	log.info("[JWT Filter] 쿠키 개수: {}", request.getCookies().length);
             for (Cookie cookie : request.getCookies()) {
+            	log.info("[JWT Filter] 쿠키 이름: {}, 값: {}", cookie.getName(), cookie.getValue().substring(0, Math.min(20, cookie.getValue().length())) + "...");
                 if ("accessToken".equals(cookie.getName())) {
+                	log.info("[JWT Filter] accessToken 쿠키 발견");
                     return cookie.getValue();
                 }
             }
+        } else {
+            log.warn("[JWT Filter] 쿠키가 없습니다");
         }
         
         // 2. Authorization 헤더에서 토큰 추출 (하위 호환성)
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+        	log.info("[JWT Filter] Authorization 헤더에서 토큰 추출");
             return bearerToken.substring(7);
         }
         
