@@ -23,6 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
 		// 정적 리소스 경로 설정
 		registry.addResourceHandler("/**")
 		.addResourceLocations("classpath:/static/")
-		.setCachePeriod(3600);
+		.setCachePeriod(3600)
+		.resourceChain(true);
 	}
 }
