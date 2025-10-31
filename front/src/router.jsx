@@ -38,6 +38,7 @@ import ClubProfile from './pages/club/ClubProfile';
 import MyActivities from './pages/myactivity/MyActivities';
 import ClubDetailNew from './pages/club/ClubDetailNew';
 import ClubSearch from './pages/club/ClubSearch';
+import ClubList from './pages/club/ClubList';
 
 const router = createBrowserRouter([
   {
@@ -121,6 +122,14 @@ const router = createBrowserRouter([
     element: (
       <MainLayout>
         <ClubSearch />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/clubs/list',
+    element: (
+      <MainLayout>
+        <ClubList />
       </MainLayout>
     ),
   },

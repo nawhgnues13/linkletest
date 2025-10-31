@@ -6,12 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ggamakun.linkle.domain.club.dto.ClubMemberDto;
+import com.ggamakun.linkle.domain.club.entity.Club;
 import com.ggamakun.linkle.domain.club.repository.IClubMemberRepository;
 import com.ggamakun.linkle.domain.club.repository.IClubRepository;
 import com.ggamakun.linkle.domain.notification.dto.CreateNotificationRequestDto;
 import com.ggamakun.linkle.domain.notification.service.NotificationService;
 import com.ggamakun.linkle.global.exception.BadRequestException;
 import com.ggamakun.linkle.global.exception.ForbiddenException;
+import com.ggamakun.linkle.global.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,6 +73,22 @@ public class ClubMemberService implements IClubMemberService {
         if (updated == 0) {
             throw new BadRequestException("회원을 찾을 수 없습니다.");
         }
+        
+        //권한 변경 알림
+        String roleText = "MANAGER".equals(role) ? "운영진": "회원";
+        Club club = clubRepository.findById(clubId);
+        String clubName = (club != null) ? club.getName() : "동호회";
+        
+        notificationService.sendNotification(
+        		CreateNotificationRequestDto.builder()
+        			.receiverId(targetMemberId)
+        			.title("권한이 변경되었습니다.")
+        			.content(clubName + "동호회에서" + roleText + "으로 변경되었습니다.")
+        			.linkUrl("/clubs/" + clubId + "/dashboard")
+        			.createdBy(currentMemberId)
+        			.build()
+        	);
+        
 
         log.info("권한 변경 완료 - clubId: {}, targetMemberId: {}, newRole: {}", clubId, targetMemberId, role);
     }
@@ -107,6 +125,21 @@ public class ClubMemberService implements IClubMemberService {
         if (removed == 0) {
             throw new BadRequestException("회원을 찾을 수 없습니다.");
         }
+        
+        //강제 탈퇴 알림
+        Club club = clubRepository.findById(clubId);
+        String clubName = (club != null) ? club.getName() : "동호회";
+        String rejoinText = allowRejoin ? "재가입이 가능합니다." : "재가입이 제한되었습니다.";
+        
+        notificationService.sendNotification(
+                CreateNotificationRequestDto.builder()
+                    .receiverId(targetMemberId)
+                    .title("동호회에서 탈퇴 처리되었습니다")
+                    .content(clubName + " 동호회에서 탈퇴 처리되었습니다. 사유: " + reason + " " + rejoinText)
+                    .linkUrl("/clubs/" + clubId + "/detail")
+                    .createdBy(currentMemberId)
+                    .build()
+            );
 
         log.info("강제 탈퇴 완료 - clubId: {}, targetMemberId: {}, allowRejoin: {}", clubId, targetMemberId, allowRejoin);
     }
@@ -124,6 +157,21 @@ public class ClubMemberService implements IClubMemberService {
         if (approved == 0) {
             throw new BadRequestException("승인 대기 중인 회원을 찾을 수 없습니다.");
         }
+        
+        //가입 승인 알림
+        Club club = clubRepository.findById(clubId);
+        String clubName = (club != null) ? club.getName() : "동호회";
+        
+        notificationService.sendNotification(
+        		CreateNotificationRequestDto.builder()
+        			.receiverId(targetMemberId)
+        			.title("가입이 승인되었습니다.")
+        			.content(clubName + " " + "동호회 가입이 승인되었습니다.")
+        			.linkUrl("/clubs/" + clubId + "/dashboard")
+        			.createdBy(currentMemberId)
+        			.build()
+        			
+        );
 
         log.info("가입 승인 완료 - clubId: {}, targetMemberId: {}", clubId, targetMemberId);
     }
@@ -141,6 +189,20 @@ public class ClubMemberService implements IClubMemberService {
         if (rejected == 0) {
             throw new BadRequestException("승인 대기 중인 회원을 찾을 수 없습니다.");
         }
+        
+        //가입 거절 알림
+        Club club = clubRepository.findById(clubId);
+        String clubName = (club != null) ? club.getName() : "동호회";
+        
+        notificationService.sendNotification(
+        		CreateNotificationRequestDto.builder()
+        			.receiverId(targetMemberId)
+        			.title("가입이 거절되었습니다")
+        			.content(clubName + " 동호회 가입이 거절되었습니다. 사유: " + rejectionReason)
+        			.linkUrl("/clubs/" + clubId + "/detail")
+        			.createdBy(currentMemberId)
+        			.build()
+        		);
 
         log.info("가입 거절 완료 - clubId: {}, targetMemberId: {}", clubId, targetMemberId);
     }
@@ -169,10 +231,10 @@ public class ClubMemberService implements IClubMemberService {
         int affected = 0;
 
         if (status == null) {
-            // 2-a) 신규 신청
+            //신규 신청
             affected = clubMemberRepository.insertWaitingMember(clubId, memberId);
         } else {
-            // 2-b) 기존 레코드가 REJECTED/EXPELLED 등으로 is_deleted='Y'인 경우 재신청 처리
+            //기존 이력이 있는경우 REJECTED/EXPELLED/WITHDRAWN 등으로 is_deleted='Y'인 경우 재신청 처리
             affected = clubMemberRepository.reactivateToWaiting(clubId, memberId);
         }
 
@@ -191,7 +253,7 @@ public class ClubMemberService implements IClubMemberService {
                     .receiverId(receiverId)
                     .title("가입신청이 도착했어요")
                     .content("새로운 회원의 가입신청이 있습니다. 승인/거절을 진행해주세요.")
-                    .linkUrl("/clubs/" + clubId + "/members") // 네 프론트 경로에 맞게
+                    .linkUrl("/clubs/" + clubId + "/members") 
                     .createdBy(memberId)
                     .build()
             );
@@ -202,4 +264,73 @@ public class ClubMemberService implements IClubMemberService {
     public String getMemberStatus(Integer clubId, Integer memberId) {
         return clubMemberRepository.checkMemberStatus(clubId, memberId);
     }
+
+	@Override
+	@Transactional
+	public void withdrawFromClub(Integer clubId, Integer memberId) {
+		//동호회 회원 목록 조회
+		List<ClubMemberDto> members = clubMemberRepository.findMembersByClubId(clubId);
+		
+		//회원 여부와 역할 확인
+		boolean isMember = false;
+		boolean isLeader = false;
+		Integer leaderId = null;
+		String memberNickname = null;
+		
+		for(ClubMemberDto member : members) {
+			if(member.getMemberId().equals(memberId)) {
+				if("APPROVED".equals(member.getStatus())) {
+					isMember = true;
+				}
+				if("LEADER".equals(member.getRole())) {
+					isLeader = true;
+				}
+				memberNickname = member.getNickname();
+			}
+			
+			//동호회장 ID 찾기
+			if("LEADER".equals(member.getRole())) {
+				leaderId = member.getMemberId();
+			}
+		}
+		
+		// 회원 여부 확인
+	    if (!isMember) {
+	        throw new NotFoundException("해당 동호회의 회원이 아닙니다.");
+	    }
+	    
+	    // 리더 여부 확인
+	    if (isLeader) {
+	        throw new BadRequestException("동호회 리더는 탈퇴할 수 없습니다. 리더 권한을 먼저 위임해주세요.");
+	    }
+	    
+	    // 동호회 탈퇴 처리 (소프트 삭제)
+	    int result = clubMemberRepository.withdrawFromClub(clubId, memberId);
+	    
+	    if (result == 0) {
+	        throw new BadRequestException("동호회 탈퇴에 실패했습니다.");
+	    }
+	    
+	    // 동호회장에게 알림 발송
+	    if (leaderId != null && !leaderId.equals(memberId)) {
+	        Club club = clubRepository.findById(clubId);
+	        String clubName = (club != null) ? club.getName() : "동호회";
+	        String nickname = (memberNickname != null) ? memberNickname : "회원";
+	        
+	        notificationService.sendNotification(
+	            CreateNotificationRequestDto.builder()
+	                .receiverId(leaderId)
+	                .title("회원이 탈퇴했습니다")
+	                .content(clubName + " - " + nickname + "님이 동호회를 탈퇴했습니다.")
+	                .linkUrl("/clubs/" + clubId + "/members")
+	                .createdBy(memberId)
+	                .build()
+	        );
+	        
+	        log.info("동호회장에게 탈퇴 알림 발송 완료 - 동호회장 ID: {}", leaderId);
+	    }
+	    
+	    log.info("동호회 탈퇴 완료 - 동호회 ID: {}, 회원 ID: {}", clubId, memberId);
+		
+	}
 }

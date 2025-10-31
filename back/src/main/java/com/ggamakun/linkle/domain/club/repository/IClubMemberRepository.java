@@ -51,10 +51,12 @@ public interface IClubMemberRepository {
 
 	List<Integer> findAdminIdsByClubId(Integer clubId);
 
-	int reactivateToWaiting(@Param("clubId")Integer clubId, @Param("applicantId")Integer applicantId);
+	int reactivateToWaiting(@Param("clubId")Integer clubId, @Param("memberId")Integer memberId);
 
 	int insertWaitingMember(@Param("clubId") Integer clubId, @Param("memberId") Integer memberId);
     
+	//동호회 탈퇴
+	int withdrawFromClub(@Param("clubId") Integer clubId, @Param("memberId") Integer memberId);
     
     
     
