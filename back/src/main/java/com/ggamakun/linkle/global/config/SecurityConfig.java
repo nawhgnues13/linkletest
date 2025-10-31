@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.ggamakun.linkle.global.security.CustomUserDetailsService;
 import com.ggamakun.linkle.global.security.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
@@ -24,9 +25,11 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityConfig {
     
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    	log.info("[SecurityConfig] filterChain 등록 시작");
         http
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -52,6 +55,7 @@ public class SecurityConfig {
                 .requestMatchers("GET","/posts/*/comments/**").permitAll()
                 .requestMatchers("/comments/**").permitAll()
                 .requestMatchers("/gallery/**").permitAll()
+                .requestMatchers("/notifications/**").permitAll()
                 .requestMatchers("GET", "/clubs/joined").authenticated()
                 .requestMatchers("GET", "/clubs/search").permitAll()
                 .requestMatchers("GET", "/clubs/recent").permitAll()
@@ -63,7 +67,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
                 
             )
-            
+            .userDetailsService(customUserDetailsService)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

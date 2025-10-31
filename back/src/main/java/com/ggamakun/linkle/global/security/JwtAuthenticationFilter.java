@@ -30,10 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
     // JWT 필터를 적용하지 않을 경로들
     private static final List<String> EXCLUDED_PATHS = Arrays.asList(
-        "/auth/login",
         "/auth/refresh",
-        "/oauth2",
-        "/login/oauth2",
         "/swagger-ui",
         "/v3/api-docs",
         "/h2-console",
@@ -41,18 +38,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         "/css",
         "/js",
         "/images",
-        "/favicon.ico",
-        "/"
+        "/favicon.ico"
     );
     
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        String method = request.getMethod();
-        if(EXCLUDED_PATHS.stream().anyMatch(path::startsWith)) {
-        	return true;
-        }
-        return false;
+        return EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
     }
     
     
@@ -61,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response, 
                                     FilterChain filterChain) 
             throws ServletException, IOException {
-        
+    	log.info("[JwtAuthenticationFilter] doFilterInternal called: {}", request.getRequestURI());
     	log.info("[JWT Filter] 요청 경로: {}", request.getRequestURI());
     	
         String token = getTokenFromRequest(request);
