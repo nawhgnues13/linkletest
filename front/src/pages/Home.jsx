@@ -9,7 +9,6 @@ const Home = () => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [categories, setCategories] = useState([]);
   const [recentClubs, setRecentClubs] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -17,7 +16,6 @@ const Home = () => {
 
   const fetchData = async () => {
     try {
-      setLoading(true);
       const [categoriesData, recentClubsData] = await Promise.all([
         categoryApi.getCategoriesHierarchy(),
         clubApi.getRecentClubs(),
@@ -28,8 +26,6 @@ const Home = () => {
       setRecentClubs(recentClubsData);
     } catch (error) {
       console.error('데이터 로딩 실패:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -138,12 +134,6 @@ const Home = () => {
               ))}
             </div>
           )}
-        </div>
-
-        <div className="fixed bottom-8 right-8">
-          <button className="w-14 h-14 bg-primary rounded-full shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center text-white text-2xl">
-            💬
-          </button>
         </div>
       </div>
       <Chatbot />
