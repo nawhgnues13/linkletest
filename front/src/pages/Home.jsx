@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { clubApi } from '../services/api/clubApi';
 import { categoryApi } from '../services/api/categoryApi';
+import Chatbot from '../components/chatbot/Chatbot';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -145,6 +146,7 @@ const Home = () => {
           </button>
         </div>
       </div>
+      <Chatbot />
     </div>
   );
 };

@@ -204,13 +204,30 @@ public class ChatService {
         Map<String, Object> args = objectMapper.readValue(arguments, new TypeReference<Map<String, Object>>() {});
         String keyword = (String) args.get("keyword");
         
-        List<SearchClubDto> clubs = clubService.searchClubs(keyword);
+        log.info("DB 검색 시작 - 키워드: {}", keyword);
         
-        if (clubs.isEmpty()) {
+        // 키워드를 공백으로 분리
+        String[] keywords = keyword.split("\\s+");
+        List<SearchClubDto> allClubs = new ArrayList<>();
+        
+        // 각 키워드로 검색하여 결과 합치기
+        for (String kw : keywords) {
+            List<SearchClubDto> clubs = clubService.searchClubs(kw);
+            for (SearchClubDto club : clubs) {
+                // 중복 제거
+                if (allClubs.stream().noneMatch(c -> c.getClubId().equals(club.getClubId()))) {
+                    allClubs.add(club);
+                }
+            }
+        }
+        
+        log.info("DB 검색 결과 개수: {}", allClubs.size());
+        
+        if (allClubs.isEmpty()) {
             return "{\"message\": \"검색 결과가 없습니다.\"}";
         }
         
-        return objectMapper.writeValueAsString(Map.of("clubs", clubs));
+        return objectMapper.writeValueAsString(Map.of("clubs", allClubs));
     }
     
     private String getClubDetail(String arguments) throws Exception {
