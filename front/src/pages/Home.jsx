@@ -4,6 +4,7 @@ import { clubApi } from '../services/api/clubApi';
 import { categoryApi } from '../services/api/categoryApi';
 import Chatbot from '../components/chatbot/Chatbot';
 import useUserStore from '../store/useUserStore';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -192,7 +193,7 @@ const Home = () => {
               type="submit"
               className="absolute right-6 top-1/2 transform -translate-y-1/2 text-primary text-xl"
             >
-              🔍
+              <MagnifyingGlassIcon className="w-6 h-6 text-blue-500" />
             </button>
           </div>
         </form>

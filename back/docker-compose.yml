@@ -4,6 +4,7 @@ services:
     image: nawhgnues/linkle-app:latest
     container_name: linkle-app
     environment:
+      - TZ=Asia/Seoul
       - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@linkle-oracle:1521:xe
       - SPRING_DATASOURCE_USERNAME=linkle
       - SPRING_DATASOURCE_PASSWORD=linkle

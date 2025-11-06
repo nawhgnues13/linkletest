@@ -58,6 +58,7 @@ public class SecurityConfig {
                 .requestMatchers("/gallery/**").permitAll()
                 .requestMatchers("/notifications/**").permitAll()
                 .requestMatchers("GET", "/clubs/joined").authenticated()
+                .requestMatchers("GET", "/clubs/*/members/my-status").authenticated()
                 .requestMatchers("GET", "/clubs/search").permitAll()
                 .requestMatchers("GET", "/clubs/recent").permitAll()
                 .requestMatchers("GET", "/clubs/recent/all").permitAll()
