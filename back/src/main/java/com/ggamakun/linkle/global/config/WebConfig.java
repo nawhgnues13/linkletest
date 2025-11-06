@@ -30,8 +30,12 @@ public class WebConfig implements WebMvcConfigurer {
 	
 	@Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        // React Router용 fallback 설정 (모든 비API 요청을 index.html로 포워드)
+        // 단일 세그먼트 경로 → index.html로 포워딩
         registry.addViewController("/{path:[^\\.]*}")
+                .setViewName("forward:/index.html");
+
+        // 다중 세그먼트 경로 → index.html로 포워딩
+        registry.addViewController("/{path:[^\\.]*}/**")
                 .setViewName("forward:/index.html");
     }
 }
