@@ -95,7 +95,7 @@ const Chatbot = () => {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="hover:bg-white hover:bg-opacity-20 p-1.5 rounded-lg transition-colors"
+              className="hover:bg-primary-hover hover:bg-opacity-20 p-1.5 rounded-lg transition-colors"
               aria-label="챗봇 닫기"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

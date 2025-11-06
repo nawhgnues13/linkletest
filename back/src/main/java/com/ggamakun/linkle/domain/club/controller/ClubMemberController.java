@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ggamakun.linkle.domain.club.dto.ApproveRejectRequest;
+import com.ggamakun.linkle.domain.club.dto.CapacityDto;
 import com.ggamakun.linkle.domain.club.dto.ClubMemberDto;
 import com.ggamakun.linkle.domain.club.dto.RemoveMemberRequest;
 import com.ggamakun.linkle.domain.club.dto.UpdateMemberRoleRequest;
@@ -137,6 +138,12 @@ public class ClubMemberController {
         clubMemberService.withdrawFromClub(clubId, memberId);
         
         return ResponseEntity.ok().build();
+    }
+    
+    @GetMapping("/clubs/{clubId:\\d+}/members/waiting-count")
+    public ResponseEntity<Integer> getWaitingCount(@PathVariable("clubId") Integer clubId) {
+        int count = clubMemberService.getWaitingCount(clubId);
+        return ResponseEntity.ok(count);
     }
     
 }
