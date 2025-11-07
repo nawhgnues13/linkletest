@@ -41,7 +41,6 @@ public class SecurityConfig {
             
             .authorizeHttpRequests(auth -> auth
             	.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/", "/index.html", "/css/**", "/images/**", "/js/**", "/assets/**", "/favicon.ico", "/h2-console/**").permitAll()
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/chatbot/**").permitAll()

@@ -55,7 +55,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "docker-compose.yml,nginx"
+          source: "docker-compose.yml,nginx, frontend"
           target: "/home/ubuntu/linkle"
 
       # 9. EC2에서 배포 실행
