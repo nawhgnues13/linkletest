@@ -20,6 +20,9 @@
 
     <!-- 알림 생성 -->
     <insert id="insertNotification" parameterType="com.ggamakun.linkle.domain.notification.dto.CreateNotificationRequestDto">
+	    <selectKey keyProperty="notificationId" resultType="java.lang.Integer" order="BEFORE">
+	        SELECT SEQ_NOTIFICATION.NEXTVAL FROM DUAL
+	    </selectKey>
         INSERT INTO NOTIFICATION (
             NOTIFICATION_ID,
             TITLE,
@@ -32,7 +35,7 @@
             IS_READ,
             IS_DELETED
         ) VALUES (
-            SEQ_NOTIFICATION.NEXTVAL,
+            #{notificationId},
             #{title},
             #{content},
             #{receiverId},

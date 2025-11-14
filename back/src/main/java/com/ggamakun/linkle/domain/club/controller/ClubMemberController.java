@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ggamakun.linkle.domain.club.dto.ApproveRejectRequest;
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 @Tag(name = "동호회 회원 관리", description = "동호회 회원 관리 API")
 public class ClubMemberController {
 
@@ -97,10 +99,6 @@ public class ClubMemberController {
                                       request.getRejectionReason(), currentMemberId);
         return ResponseEntity.ok().build();
     }
-    
-    
-    
-    
     
     @PostMapping("/clubs/{clubId}/members/join")
     public ResponseEntity<Void> requestJoin(

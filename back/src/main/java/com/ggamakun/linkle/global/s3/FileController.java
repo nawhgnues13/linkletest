@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/file")
+@RequestMapping("/api/file")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "파일 관리", description = "파일 업로드/삭제 API")

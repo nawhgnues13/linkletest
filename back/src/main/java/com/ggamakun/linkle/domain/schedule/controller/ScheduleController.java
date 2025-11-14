@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/schedules")
+@RequestMapping("/api/schedules")
 @Tag(name = "일정", description = "일정 관련 API")
 public class ScheduleController {
 	

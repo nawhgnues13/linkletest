@@ -2,18 +2,18 @@ import { get, put, del } from '../apiClient';
 
 export const notificationApi = {
   getNotifications: async () => {
-    return await get('/notifications');
+    return await get('/api/notifications');
   },
 
   markAsRead: async (notificationId) => {
-    await put(`/notifications/${notificationId}/read`);
+    await put(`/api/notifications/${notificationId}/read`);
   },
 
   markAllAsRead: async () => {
-    await put('/notifications/read-all');
+    await put('/api/notifications/read-all');
   },
 
   deleteNotification: async (notificationId) => {
-    await del(`/notifications/${notificationId}`);
+    await del(`/api/notifications/${notificationId}`);
   },
 };

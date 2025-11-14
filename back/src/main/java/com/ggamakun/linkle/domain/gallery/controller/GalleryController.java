@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/gallery")
+@RequestMapping("/api/gallery")
 public class GalleryController {
 	private final IGalleryService galleryService;
 	

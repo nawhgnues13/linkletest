@@ -15,7 +15,7 @@ export const fileApi = {
     formData.append('file', file);
 
     try {
-      const response = await fileClient.post('/file/upload', formData, {
+      const response = await fileClient.post('/api/file/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -32,7 +32,7 @@ export const fileApi = {
   // 파일 정보 조회
   getFile: async (fileId) => {
     try {
-      const response = await fileClient.get(`/file/${fileId}`);
+      const response = await fileClient.get(`/api/file/${fileId}`);
       return response.data;
     } catch (error) {
       console.error('파일 조회 실패:', error);
@@ -46,7 +46,7 @@ export const fileApi = {
 
     try {
       // 각 fileId에 대해 조회
-      const promises = fileIds.map((fileId) => fileClient.get(`/file/${fileId}`));
+      const promises = fileIds.map((fileId) => fileClient.get(`/api/file/${fileId}`));
 
       const responses = await Promise.all(promises);
       return responses.map((res) => res.data);
@@ -59,7 +59,7 @@ export const fileApi = {
   // 이미지 삭제 (fileId로 삭제)
   deleteImage: async (fileId) => {
     try {
-      const response = await fileClient.delete(`/file/${fileId}`);
+      const response = await fileClient.delete(`/api/file/${fileId}`);
       return response.data;
     } catch (error) {
       console.error('이미지 삭제 실패:', error);

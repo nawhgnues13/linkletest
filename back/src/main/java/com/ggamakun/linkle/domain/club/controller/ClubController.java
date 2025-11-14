@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 @Slf4j
 @Tag(name = "동호회", description = "동호회 관련 API")
 public class ClubController {
@@ -198,7 +200,7 @@ public class ClubController {
 	 */
 	@GetMapping("/clubs/popular")
 	public ResponseEntity<List<RecommendClubDto>> getPopularClubs(
-	        @RequestParam(name = "size", defaultValue = "3") int size,
+	        @RequestParam(name = "size", defaultValue = "4") int size,
 	        @RequestParam(name = "cursor", required = false) Integer cursor) {
 	    List<RecommendClubDto> clubs = clubService.getPopularClubs(size, cursor);
 	    return ResponseEntity.ok(clubs);
@@ -211,7 +213,7 @@ public class ClubController {
 	 */
 	@GetMapping("/clubs/growing")
 	public ResponseEntity<List<RecommendClubDto>> getGrowingClubs(
-	        @RequestParam(name = "size", defaultValue = "3") int size,
+	        @RequestParam(name = "size", defaultValue = "4") int size,
 	        @RequestParam(name = "cursor", required = false) Integer cursor) {
 	    List<RecommendClubDto> clubs = clubService.getGrowingClubs(size, cursor);
 	    return ResponseEntity.ok(clubs);
@@ -224,7 +226,7 @@ public class ClubController {
 	 */
 	@GetMapping("/clubs/active")
 	public ResponseEntity<List<RecommendClubDto>> getActiveClubs(
-	        @RequestParam(name = "size", defaultValue = "3") int size,
+	        @RequestParam(name = "size", defaultValue = "4") int size,
 	        @RequestParam(name = "cursor", required = false) Integer cursor) {
 	    List<RecommendClubDto> clubs = clubService.getActiveClubs(size, cursor);
 	    return ResponseEntity.ok(clubs);

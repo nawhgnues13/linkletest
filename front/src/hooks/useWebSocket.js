@@ -15,7 +15,7 @@ export const useWebSocket = (memberId, onNotification) => {
     if (!memberId) return;
 
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+      webSocketFactory: () => new SockJS(`${import.meta.env.VITE_API_BASE_URL}/ws`),
       connectHeaders: {},
       debug: (str) => {
         console.log('STOMP:', str);

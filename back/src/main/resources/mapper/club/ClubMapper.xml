@@ -209,30 +209,40 @@
 			cm.joined_at ASC
 	</select>
 	
-	<!-- 동호회 회원별 월별 참여율 조회 (최근 6개월, 상위 5명) -->
-    <select id="getMonthlyAttendance" resultType="com.ggamakun.linkle.domain.club.dto.MonthlyAttendanceDto">
-        SELECT * FROM (
-            SELECT 
-                m.member_id AS memberId,
-                m.nickname AS nickname,
-                f.file_link AS profileImageUrl,
-                ROUND(AVG(CASE WHEN sa.attendance_status = 'ATTEND' THEN 100 ELSE 0 END), 1) AS avgAttendanceRate
-            FROM CLUB_MEMBER cm
-            JOIN MEMBER m ON cm.member_id = m.member_id
-            LEFT JOIN FILE_STORAGE f ON m.file_id = f.file_id AND f.is_deleted = 'N'
-            LEFT JOIN SCHEDULE_ATTENDANCE sa ON sa.member_id = cm.member_id
-            LEFT JOIN SCHEDULE s ON s.schedule_id = sa.schedule_id 
-                AND s.club_id = #{clubId}
-                AND s.schedule_start_date >= ADD_MONTHS(SYSDATE, -6)
-                AND s.is_deleted = 'N'
-                AND s.is_canceled = 'N'
-            WHERE cm.club_id = #{clubId}
-                AND cm.status = 'APPROVED'
-                AND cm.is_deleted = 'N'
-            GROUP BY m.member_id, m.nickname, f.file_link
-            ORDER BY avgAttendanceRate DESC
-        ) WHERE ROWNUM &lt;= 5
-    </select>
+    <!-- 동호회 회원별 월별 참여율 조회 (최근 6개월, 상위 5명) -->
+	<select id="getMonthlyAttendance" resultType="com.ggamakun.linkle.domain.club.dto.MonthlyAttendanceDto">
+	    <![CDATA[
+	    SELECT * FROM (
+	        SELECT 
+	            m.member_id AS memberId,
+	            m.nickname AS nickname,
+	            f.file_link AS profileImageUrl,
+	            ROUND(
+	                (COUNT(CASE WHEN sa.attendance_status = 'ATTEND' THEN 1 END) * 100.0) / 
+	                NULLIF((SELECT COUNT(*) 
+	                        FROM SCHEDULE s 
+	                        WHERE s.club_id = #{clubId}
+	                        AND s.schedule_start_date >= ADD_MONTHS(SYSDATE, -6)
+	                        AND s.is_deleted = 'N'
+	                        AND s.is_canceled = 'N'), 0)
+	            , 1) AS avgAttendanceRate
+	        FROM CLUB_MEMBER cm
+	        JOIN MEMBER m ON cm.member_id = m.member_id
+	        LEFT JOIN FILE_STORAGE f ON m.file_id = f.file_id AND f.is_deleted = 'N'
+	        LEFT JOIN SCHEDULE_ATTENDANCE sa ON sa.member_id = cm.member_id AND sa.is_deleted = 'N'
+	        LEFT JOIN SCHEDULE s ON s.schedule_id = sa.schedule_id 
+	            AND s.club_id = #{clubId}
+	            AND s.schedule_start_date >= ADD_MONTHS(SYSDATE, -6)
+	            AND s.is_deleted = 'N'
+	            AND s.is_canceled = 'N'
+	        WHERE cm.club_id = #{clubId}
+	            AND cm.status = 'APPROVED'
+	            AND cm.is_deleted = 'N'
+	        GROUP BY m.member_id, m.nickname, f.file_link
+	        ORDER BY avgAttendanceRate DESC NULLS LAST
+	    ) WHERE ROWNUM <= 5
+	    ]]>
+	</select>
 
     <!-- 동호회 나이대 분포 조회 -->
     <select id="getAgeDistribution" resultType="com.ggamakun.linkle.domain.club.dto.AgeDistributionDto">
@@ -387,13 +397,10 @@
 	        AND cm2.status = 'APPROVED' 
 	        AND cm2.is_deleted = 'N'
 	    WHERE c.region IN (
-	        SELECT DISTINCT cl.region
-	        FROM CLUB cl
-	        JOIN CLUB_MEMBER cm ON cl.club_id = cm.club_id
-	        WHERE cm.member_id = #{memberId}
-	        AND cm.status = 'APPROVED'
-	        AND cm.is_deleted = 'N'
-	        AND cl.region IS NOT NULL
+	        SELECT m.sido || ' ' || m.sigungu as region
+	        FROM MEMBER m
+	        WHERE m.member_id = #{memberId}
+	        AND m.is_deleted = 'N'
 	    )
 	    AND c.club_id NOT IN (
 	        SELECT club_id 
@@ -477,7 +484,7 @@
 	        GROUP BY c.club_id, c.name, c.description, f.file_link, cat.name, c.region, c.opened_at
 	        ORDER BY c.opened_at DESC
 	    )
-	    WHERE ROWNUM <= 3
+	    WHERE ROWNUM <= 4
 	    ]]>
 	</select>
 	
@@ -543,7 +550,7 @@
 	        GROUP BY c.club_id, c.name, c.description, f.file_link, cat.name, c.region, c.opened_at
 	        ORDER BY c.opened_at DESC
 	    )
-	    WHERE ROWNUM <= 3
+	    WHERE ROWNUM <= 4
 	    ]]>
 	</select>
 	

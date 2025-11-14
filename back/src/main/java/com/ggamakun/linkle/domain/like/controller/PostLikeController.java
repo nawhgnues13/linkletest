@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/posts")
+@RequestMapping("/api/posts")
 @Slf4j
 @Tag(name="좋아요", description="게시물 좋아요 관련 API")
 public class PostLikeController {

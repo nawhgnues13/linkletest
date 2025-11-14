@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { notificationApi } from '../../services/api/notificationApi';
+import { notificationApi, clubApi } from '../../services/api';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import useUserStore from '../../store/useUserStore';
 
@@ -78,7 +78,7 @@ const NotificationDropdown = ({ memberId }) => {
       handleMarkAsRead(notification.notificationId);
     }
     if (notification.linkUrl && notification.linkUrl.includes('/clubs')) {
-      const clubIdMatch = notification.linkUrl.match(/\clubs\/(\d+)/);
+      const clubIdMatch = notification.linkUrl.match(/\/clubs\/(\d+)/);
       if (clubIdMatch) {
         const clubId = parseInt(clubIdMatch[1]);
         try {
@@ -115,7 +115,10 @@ const NotificationDropdown = ({ memberId }) => {
     return date.toLocaleDateString('ko-KR');
   };
 
-  const hasUnreadNotifications = notifications.some((n) => n.isRead === 'N');
+  //const hasUnreadNotifications = notifications.some((n) => n.isRead === 'N');
+  const hasUnreadNotifications = useMemo(() => {
+    return notifications.some((n) => n.isRead === 'N');
+  }, [notifications]);
 
   return (
     <div className="relative" ref={dropdownRef}>

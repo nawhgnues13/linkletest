@@ -3,74 +3,74 @@ import { get, put, del, post } from '../apiClient';
 export const clubApi = {
   // 내가 가입한 동호회 목록 조회
   getJoinedClubs: async () => {
-    return (await get('/clubs/joined')) || [];
+    return (await get('/api/clubs/joined')) || [];
   },
 
   // 동호회 생성
   createClub: async (data) => {
-    const response = await post('/clubs', data);
+    const response = await post('/api/clubs', data);
     return response.data;
   },
 
   // 동호회 상세 정보 조회
   getClubDetail: async (clubId) => {
-    return await get(`/clubs/${clubId}`);
+    return await get(`/api/clubs/${clubId}`);
   },
 
   // 동호회 수정
   updateClub: async (clubId, data) => {
-    return await put(`/clubs/${clubId}`, data);
+    return await put(`/api/clubs/${clubId}`, data);
   },
 
   // 동호회 삭제
   deleteClub: async (clubId) => {
-    return await del(`/clubs/${clubId}`);
+    return await del(`/api/clubs/${clubId}`);
   },
 
   // 동호회 회원 수 조회
   getClubMemberCount: async (clubId) => {
-    return await get(`/clubs/${clubId}/member-count`);
+    return await get(`/api/clubs/${clubId}/member-count`);
   },
 
   // 동호회 회원 목록 조회
   getClubMembers: async (clubId) => {
-    return await get(`/clubs/${clubId}/members/summary`);
+    return await get(`/api/clubs/${clubId}/members/summary`);
   },
   // 가입 신청
   requestJoin: async (clubId) => {
-    return await post(`/clubs/${clubId}/members/join`);
+    return await post(`/api/clubs/${clubId}/members/join`);
   },
 
   // 회원 상태 조회
   getMyMemberStatus: async (clubId) => {
-    return await get(`/clubs/${clubId}/members/my-status`);
+    return await get(`/api/clubs/${clubId}/members/my-status`);
   },
 
   // 대시보드 통계 조회
   getMonthlyAttendance: async (clubId) => {
-    return await get(`/clubs/${clubId}/dashboard/attendance`);
+    return await get(`/api/clubs/${clubId}/dashboard/attendance`);
   },
 
   getAgeDistribution: async (clubId) => {
-    return await get(`/clubs/${clubId}/dashboard/age`);
+    return await get(`/api/clubs/${clubId}/dashboard/age`);
   },
 
   getGenderRatio: async (clubId) => {
-    return await get(`/clubs/${clubId}/dashboard/gender`);
+    return await get(`/api/clubs/${clubId}/dashboard/gender`);
   },
 
   getQuarterlyJoinStats: async (clubId) => {
-    return await get(`/clubs/${clubId}/dashboard/quarterly-join`);
+    return await get(`/api/clubs/${clubId}/dashboard/quarterly-join`);
   },
 
   // 동호회 검색
   searchClubs: async (keyword) => {
-    return await get(`/clubs/search?keyword=${encodeURIComponent(keyword)}`);
+    return await get(`/api/clubs/search?keyword=${encodeURIComponent(keyword)}`);
   },
 
   // 최근 생성 동호회 조회 (메인용 - 3개)
   getRecentClubs: async () => {
-    return await get('/clubs/recent');
+    return await get('/api/clubs/recent');
   },
 
   // 최근 생성 동호회 조회 (더보기용 - 무한 스크롤)
@@ -80,12 +80,12 @@ export const clubApi = {
     if (cursor) {
       params.append('cursor', cursor);
     }
-    return await get(`/clubs/recent/all?${params.toString()}`);
+    return await get(`/api/clubs/recent/all?${params.toString()}`);
   },
 
   // 카테고리별 동호회 조회 (메인용 - 3개)
   getClubsByCategory: async (categoryId) => {
-    return await get(`/clubs/category/${categoryId}`);
+    return await get(`/api/clubs/category/${categoryId}`);
   },
 
   // 카테고리별 동호회 조회 (더보기용 - 무한 스크롤)
@@ -95,27 +95,27 @@ export const clubApi = {
     if (cursor) {
       params.append('cursor', cursor);
     }
-    return await get(`/clubs/category/${categoryId}/all?${params.toString()}`);
+    return await get(`/api/clubs/category/${categoryId}/all?${params.toString()}`);
   },
 
   // 동호회 추천 - 카테고리 기반
   getRecommendByCategory: async () => {
-    return await get('/clubs/recommend/category');
+    return await get('/api/clubs/recommend/category');
   },
 
   // 동호회 추천 - 지역 기반
   getRecommendByRegion: async () => {
-    return await get('/clubs/recommend/region');
+    return await get('/api/clubs/recommend/region');
   },
 
   // 동호회 추천 - 복합
   getRecommendByCombined: async () => {
-    return await get('/clubs/recommend/combined');
+    return await get('/api/clubs/recommend/combined');
   },
 
   //동호회 탈퇴
   withdrawFromClub: async (clubId) => {
-    return await del(`/clubs/${clubId}/members/withdraw`);
+    return await del(`/api/clubs/${clubId}/members/withdraw`);
   },
 
   // 인기 동호회 조회 (통합)
@@ -125,7 +125,7 @@ export const clubApi = {
     if (cursor) {
       params.append('cursor', cursor);
     }
-    return await get(`/clubs/popular?${params.toString()}`);
+    return await get(`/api/clubs/popular?${params.toString()}`);
   },
 
   // 급성장 동호회 조회 (통합)
@@ -135,7 +135,7 @@ export const clubApi = {
     if (cursor) {
       params.append('cursor', cursor);
     }
-    return await get(`/clubs/growing?${params.toString()}`);
+    return await get(`/api/clubs/growing?${params.toString()}`);
   },
 
   // 활발한 동호회 조회 (통합)
@@ -145,6 +145,6 @@ export const clubApi = {
     if (cursor) {
       params.append('cursor', cursor);
     }
-    return await get(`/clubs/active?${params.toString()}`);
+    return await get(`/api/clubs/active?${params.toString()}`);
   },
 };

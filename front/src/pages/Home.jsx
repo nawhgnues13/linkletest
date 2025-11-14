@@ -54,17 +54,17 @@ const Home = () => {
       },
     );
 
-    clubApi.getGrowingClubs(3).then((data) => {
+    clubApi.getGrowingClubs(4).then((data) => {
       setGrowingClubs(data);
       setLoadingStates((prev) => ({ ...prev, growing: false }));
     });
 
-    clubApi.getPopularClubs(3).then((data) => {
+    clubApi.getPopularClubs(4).then((data) => {
       setPopularClubs(data);
       setLoadingStates((prev) => ({ ...prev, popular: false }));
     });
 
-    clubApi.getActiveClubs(3).then((data) => {
+    clubApi.getActiveClubs(4).then((data) => {
       setActiveClubs(data);
       setLoadingStates((prev) => ({ ...prev, active: false }));
     });
@@ -72,8 +72,8 @@ const Home = () => {
     if (isAuthenticated) {
       Promise.all([clubApi.getRecommendByCategory(), clubApi.getRecommendByRegion()])
         .then(([categoryData, regionData]) => {
-          setCategoryRecommendClubs(Array.isArray(categoryData) ? categoryData.slice(0, 3) : []);
-          setRegionRecommendClubs(Array.isArray(regionData) ? regionData.slice(0, 3) : []);
+          setCategoryRecommendClubs(Array.isArray(categoryData) ? categoryData.slice(0, 4) : []);
+          setRegionRecommendClubs(Array.isArray(regionData) ? regionData.slice(0, 4) : []);
         })
         .catch(() => {})
         .finally(() => {
@@ -109,7 +109,7 @@ const Home = () => {
       onClick={() => handleClubClick(club.clubId)}
       className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
     >
-      <div className="w-full h-48 bg-gray-300 flex items-center justify-center">
+      <div className="w-full h-45 bg-gray-300 flex items-center justify-center">
         {club.fileLink ? (
           <img
             src={club.fileLink}
@@ -121,9 +121,9 @@ const Home = () => {
           <div className="w-full h-full bg-gray-300"></div>
         )}
       </div>
-      <div className="p-6">
-        <h3 className="font-bold text-xl mb-3 text-gray-900">{club.clubName}</h3>
-        <p className="text-gray-600 text-sm mb-4 leading-relaxed line-clamp-2">
+      <div className="py-4 px-6">
+        <h3 className="font-bold text-xl mb-2 text-gray-900">{club.clubName}</h3>
+        <p className="text-gray-600 text-sm mb-3 leading-relaxed line-clamp-2">
           {club.description || '동호회 소개가 없습니다.'}
         </p>
         <div className="flex items-center justify-between text-sm text-gray-500">
@@ -152,7 +152,7 @@ const Home = () => {
   const renderClubSection = (title, clubs, type, isLoading) => (
     <div className="mb-20">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+        <h2 className="text-xl font-bold text-gray-900">{title}</h2>
         {clubs.length > 0 && (
           <button
             onClick={() => handleMoreClick(type)}
@@ -164,30 +164,30 @@ const Home = () => {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-3 gap-8">
-          {[1, 2, 3].map((i) => (
+        <div className="grid grid-cols-4 gap-8">
+          {[1, 2, 3, 4].map((i) => (
             <div key={i}>{renderSkeletonCard()}</div>
           ))}
         </div>
       ) : clubs.length === 0 ? (
         <div className="text-center py-12 text-gray-500">동호회가 없습니다.</div>
       ) : (
-        <div className="grid grid-cols-3 gap-8">{clubs.map(renderClubCard)}</div>
+        <div className="grid grid-cols-4 gap-8">{clubs.map(renderClubCard)}</div>
       )}
     </div>
   );
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        <form onSubmit={handleSearch} className="mb-16 flex justify-center">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <form onSubmit={handleSearch} className="mb-8 mt-3 flex justify-center">
           <div className="relative w-full max-w-4xl">
             <input
               type="text"
               placeholder="검색어를 입력해 주세요"
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
-              className="w-full px-6 py-5 text-lg border-2 border-primary rounded-full focus:outline-none bg-white shadow-sm"
+              className="w-full px-6 py-4 text-base border-2 border-primary rounded-full focus:outline-none bg-white shadow-sm"
             />
             <button
               type="submit"
@@ -216,7 +216,7 @@ const Home = () => {
                     <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-3 group-hover:shadow-md transition-shadow">
                       <span className="text-2xl">{getCategoryIcon(category.name)}</span>
                     </div>
-                    <span className="text-sm text-gray-700 text-center whitespace-nowrap group-hover:text-gray-900">
+                    <span className="text-sm text-gray-700 font-semibold text-center whitespace-nowrap group-hover:text-gray-900">
                       {category.name}
                     </span>
                   </div>

@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/comments")
+@RequestMapping("/api/comments")
 @Slf4j
 @Tag(name="좋아요", description="댓글 좋아요 관련 API")
 public class CommentLikeController {

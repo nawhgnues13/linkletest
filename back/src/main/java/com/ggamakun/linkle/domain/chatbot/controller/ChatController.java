@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/chatbot")
+@RequestMapping("/api/chatbot")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "챗봇", description = "챗봇 API")
